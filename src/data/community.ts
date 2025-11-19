@@ -1,0 +1,88 @@
+export const communitySidebar = [
+  { label: "대시보드", icon: "dashboard" },
+  { label: "LMS", icon: "school" },
+  { label: "출석", icon: "task_alt" },
+  { label: "커뮤니티", icon: "forum", active: true },
+  { label: "설정", icon: "settings" },
+  { label: "고객지원", icon: "support_agent" },
+];
+
+export const communityFilters = {
+  category: "카테고리: 전체",
+  sort: "정렬: 최신순",
+};
+
+export const communityPosts = [
+  {
+    id: 102,
+    title: "반응형 레이아웃 Flexbox 활용법 질문드립니다",
+    replies: 3,
+    author: "이준호",
+    date: "2024-11-19",
+    views: 128,
+    likes: 15,
+  },
+  {
+    id: 101,
+    title: "파이썬 프로젝트 팀원 구합니다! (2명)",
+    replies: 5,
+    author: "김민지",
+    date: "2024-11-19",
+    views: 256,
+    likes: 32,
+  },
+  {
+    id: 100,
+    title: "유용한 VS Code 익스텐션 공유합니다",
+    replies: 8,
+    author: "박서현",
+    date: "2024-11-18",
+    views: 512,
+    likes: 48,
+  },
+  {
+    id: 99,
+    title: "자바스크립트 null과 undefined 차이점이 뭔가요?",
+    replies: 12,
+    author: "최동현",
+    date: "2024-11-18",
+    views: 1024,
+    likes: 99,
+  },
+  {
+    id: 98,
+    title: "React 상태관리 완벽 가이드 (Redux vs Zustand)",
+    replies: 6,
+    author: "강지우",
+    date: "2024-11-17",
+    views: 870,
+    likes: 76,
+  },
+  {
+    id: 97,
+    title: "임베디드 C언어 포인터 개념 정리",
+    replies: 4,
+    author: "정수빈",
+    date: "2024-11-17",
+    views: 340,
+    likes: 28,
+  },
+  {
+    id: 96,
+    title: "웹툰 작업시 클립스튜디오 추천 브러시 있나요?",
+    replies: 9,
+    author: "윤서아",
+    date: "2024-11-16",
+    views: 215,
+    likes: 22,
+  },
+  {
+    id: 95,
+    title: "컴활 2급 실기 단축키 암기법 공유",
+    replies: 15,
+    author: "한지민",
+    date: "2024-11-16",
+    views: 720,
+    likes: 85,
+  },
+];

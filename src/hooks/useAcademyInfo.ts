@@ -1,0 +1,61 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+
+/**
+ * 학원 정보 Hook
+ * 백엔드 연결 시 AcademyInfo 테이블에서 동적으로 데이터를 가져옴
+ */
+
+export interface AcademyInfo {
+  name: string;
+  address: string;
+  phone: string;
+  email?: string;
+  website?: string;
+  blog?: string;
+  instagram?: string;
+  hours: string;
+  hoursWeekend?: string;
+}
+
+// 기본값 (DB 연결 실패 시 fallback)
+const DEFAULT_INFO: AcademyInfo = {
+  name: '코딩메이커학원',
+  address: '전남 광양시 무등길 47 (중동 1549-9)',
+  phone: '061-745-3355',
+  website: 'www.codingmaker.co.kr',
+  blog: 'https://blog.naver.com/kkj0201',
+  instagram: 'https://www.instagram.com/codingmaker_kj/',
+  hours: '평일 14:00~19:00',
+  hoursWeekend: '토요일 14:00~17:00',
+};
+
+export function useAcademyInfo() {
+  const [info, setInfo] = useState<AcademyInfo>(DEFAULT_INFO);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchAcademyInfo() {
+      try {
+        // TODO: 백엔드 연결 시 주석 해제
+        // const response = await api.get<AcademyInfo>(endpoints.academy.info);
+        // setInfo(response);
+        
+        // 임시로 기본값 사용
+        setInfo(DEFAULT_INFO);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch academy info:', err);
+        setError('학원 정보를 불러오는데 실패했습니다.');
+        setInfo(DEFAULT_INFO); // fallback
+        setIsLoading(false);
+      }
+    }
+
+    fetchAcademyInfo();
+  }, []);
+
+  return { info, isLoading, error };
+}
