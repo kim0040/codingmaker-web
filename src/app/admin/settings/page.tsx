@@ -5,15 +5,19 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminSettingsPage() {
+  const { user } = useAuth();
+
   return (
     <DashboardLayout
-      userName="김 원장"
+      userName={user?.name || "관리자"}
       userSubtitle="코딩메이커 아카데미"
       sidebarItems={adminSidebar}
       headerTitle="설정"
       headerSubtitle="학원 및 계정 설정을 관리하세요"
+      requiredTier={2}
     >
       <div className="space-y-6">
         <Card>
@@ -61,7 +65,7 @@ export default function AdminSettingsPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">이름</label>
-                <Input defaultValue="김 원장" />
+                <Input value={user?.name || ""} readOnly />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">이메일</label>

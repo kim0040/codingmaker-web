@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { api, endpoints } from "@/lib/api";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 
 export default function LocationPage() {
   const [academyInfo, setAcademyInfo] = useState<any>(null);
@@ -28,16 +30,27 @@ export default function LocationPage() {
   const hours = academyInfo?.hours || "평일 14:00~19:00 / 토 14:00~17:00";
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">오시는 길</h1>
-          <p className="text-xl">광양시 중동에서 찾아뵙겠습니다</p>
-        </div>
-      </section>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main className="flex-1 bg-background">
+        {/* Hero */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24 text-center">
+            <p className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary mb-6">
+              <span className="material-symbols-outlined text-base">location_on</span>
+              오시는 길
+            </p>
+            <h1 className="text-4xl font-black leading-tight tracking-tight text-foreground sm:text-5xl mb-6">
+              광양시 <span className="text-primary">중동</span>에서 찾아뷁겠습니다
+            </h1>
+            <p className="text-lg text-secondary mb-8 max-w-3xl mx-auto">
+              {address}
+            </p>
+          </div>
+        </section>
 
-      <section className="py-12 container mx-auto px-4">
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto">
           {/* 지도 */}
           <Card className="mb-8 overflow-hidden">
@@ -119,8 +132,11 @@ export default function LocationPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </section>
+          </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 }

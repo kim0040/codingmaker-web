@@ -112,6 +112,7 @@ export default function AcademyInfoPage() {
       userSubtitle="Tier 1 - 최고 관리자"
       sidebarItems={adminSidebar}
       headerTitle="학원 정보 관리"
+      requiredTier={1}
     >
       <div className="p-6 max-w-4xl mx-auto">
         <div className="mb-6">

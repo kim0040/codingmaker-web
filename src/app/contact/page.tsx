@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -43,16 +45,27 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">상담 신청</h1>
-          <p className="text-xl">궁금한 점을 남겨주시면 빠르게 연락드리겠습니다</p>
-        </div>
-      </section>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main className="flex-1 bg-background">
+        {/* Hero */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24 text-center">
+            <p className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary mb-6">
+              <span className="material-symbols-outlined text-base">chat</span>
+              상담 신청
+            </p>
+            <h1 className="text-4xl font-black leading-tight tracking-tight text-foreground sm:text-5xl mb-6">
+              궁금한 점을 <span className="text-primary">남겨주세요</span>
+            </h1>
+            <p className="text-lg text-secondary mb-8 max-w-3xl mx-auto">
+              빠른 시일 내에 연락드리겠습니다
+            </p>
+          </div>
+        </section>
 
-      <section className="py-12 container mx-auto px-4">
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {/* 연락 정보 */}
@@ -255,8 +268,11 @@ export default function ContactPage() {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+          </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 }

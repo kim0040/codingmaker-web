@@ -27,22 +27,63 @@ export async function checkinHandler(req: Request, res: Response) {
       });
     }
 
-    const attendance = await prisma.attendance.create({
-      data: {
+    const studentName = decrypt(user.name) ?? "사용자";
+
+    // 오늘 날짜 (시간 제외)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // 오늘 출석 기록 확인
+    const todayAttendance = await prisma.attendance.findFirst({
+      where: {
         userId: user.id,
-        status: "ATTENDED",
-        date: new Date(),
+        date: {
+          gte: today,
+          lt: tomorrow,
+        },
       },
     });
+
+    let message = "";
+    let type = "";
+    let attendance;
+
+    if (!todayAttendance) {
+      // 등원 처리
+      attendance = await prisma.attendance.create({
+        data: {
+          userId: user.id,
+          status: "PRESENT",
+          date: new Date(),
+        },
+      });
+      message = `${studentName}님, 안녕하세요! 😊`;
+      type = "ARRIVAL";
+    } else {
+      // 하원 처리 (note에 시간 기록)
+      const now = new Date();
+      attendance = await prisma.attendance.update({
+        where: { id: todayAttendance.id },
+        data: {
+          note: `하원: ${now.toLocaleTimeString('ko-KR')}`,
+        },
+      });
+      message = `${studentName}님, 안녕히 가세요! 👋`;
+      type = "DEPARTURE";
+    }
 
     res.json({
       success: true,
       data: {
-        studentName: decrypt(user.name) ?? "사용자",
-        time: attendance.date,
+        studentName,
+        time: new Date(),
         status: attendance.status,
+        type, // "ARRIVAL" or "DEPARTURE"
+        isFirstCheckToday: !todayAttendance,
       },
-      message: "출석 완료!",
+      message,
     });
   } catch (error) {
     console.error("Attendance check error:", error);

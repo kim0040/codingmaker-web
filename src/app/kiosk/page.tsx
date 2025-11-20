@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { kioskMeta, kioskKeyboard } from "@/data/kiosk";
 import { Button } from "@/components/ui/button";
 import { api, endpoints } from "@/lib/api";
@@ -15,8 +15,18 @@ export default function KioskPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showDuplicate, setShowDuplicate] = useState(false);
   const [studentName, setStudentName] = useState("");
+  const [attendanceType, setAttendanceType] = useState<"ARRIVAL" | "DEPARTURE">("ARRIVAL");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // 실시간 시계
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const displayValue = useMemo(() => {
     if (!value) return "";
@@ -53,12 +63,14 @@ export default function KioskPage() {
 
       if (response.success && response.data) {
         setStudentName(response.data.studentName);
+        setAttendanceType(response.data.type || "ARRIVAL");
         setShowSuccess(true);
         setShowDuplicate(false);
         // TODO: 성공 효과음 재생
         setTimeout(() => {
           setShowSuccess(false);
           setValue("");
+          setError("");
         }, 3000);
       } else {
         setError("출석 체크에 실패했습니다.");
@@ -82,7 +94,9 @@ export default function KioskPage() {
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">출석체크 키오스크</p>
             <h1 className="mt-4 text-4xl font-bold text-foreground">{kioskMeta.instruction}</h1>
-            <p className="mt-2 text-primary">현재 시각 {kioskMeta.timeDisplay}</p>
+            <p className="mt-2 text-primary text-2xl font-mono">
+              {currentTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -161,14 +175,26 @@ export default function KioskPage() {
       </main>
 
       {showSuccess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="w-full max-w-md rounded-3xl bg-card p-8 text-center text-foreground shadow-2xl">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-success text-white">
-              <span className="material-symbols-outlined !text-4xl">task_alt</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-card p-10 text-center text-foreground shadow-2xl border-4 border-primary/20">
+            <div className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full text-white ${
+              attendanceType === "ARRIVAL" ? "bg-green-500" : "bg-blue-500"
+            }`}>
+              <span className="material-symbols-outlined !text-5xl">
+                {attendanceType === "ARRIVAL" ? "login" : "logout"}
+              </span>
             </div>
-            <h2 className="mt-6 text-3xl font-bold">출석 완료!</h2>
-            <p className="mt-4 text-xl font-semibold text-primary">{studentName}님</p>
-            <p className="mt-2 text-muted-foreground">출석이 확인되었습니다. 잠시 후 화면이 초기화됩니다.</p>
+            <h2 className="mt-6 text-4xl font-bold">
+              {attendanceType === "ARRIVAL" ? "등원 완료!" : "하원 완료!"}
+            </h2>
+            <p className="mt-4 text-2xl font-bold text-primary">{studentName}님</p>
+            <p className="mt-4 text-lg text-muted-foreground">
+              {attendanceType === "ARRIVAL" 
+                ? "안녕하세요! 오늘도 힙내세요! 😊" 
+                : "안녕히 가세요! 조심히 들어가세요! 👋"
+              }
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">잠시 후 화면이 초기화됩니다.</p>
           </div>
         </div>
       )}

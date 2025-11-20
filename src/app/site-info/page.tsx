@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 
 export default function SiteInfoPage() {
   const techStack = {
@@ -35,26 +37,28 @@ export default function SiteInfoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 text-white py-20">
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 animate-fade-in">
-            <span className="material-symbols-outlined animate-pulse">code</span>
-            <span className="text-sm font-semibold">코딩메이커 학원 통합 관리 시스템</span>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main className="flex-1 bg-background">
+        {/* Hero */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24 text-center">
+            <p className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary mb-6">
+              <span className="material-symbols-outlined text-base">code</span>
+              사이트 정보
+            </p>
+            <h1 className="text-4xl font-black leading-tight tracking-tight text-foreground sm:text-5xl mb-6">
+              최신 기술로 <span className="text-primary">구축된</span> 학원 관리 플랫폼
+            </h1>
+            <p className="text-lg text-secondary mb-8 max-w-3xl mx-auto">
+              코딩메이커 학원 통합 관리 시스템 (CMLMS)
+            </p>
           </div>
-          <h1 className="text-5xl font-bold mb-4 animate-fade-in-up">
-            사이트 정보
-          </h1>
-          <p className="text-xl text-blue-100 animate-fade-in-up animation-delay-100">
-            최신 기술로 구축된 학원 관리 플랫폼
-          </p>
-        </div>
-      </section>
+        </section>
 
-      {/* 프로젝트 개요 */}
-      <section className="py-16 container mx-auto px-4">
+        {/* 프로젝트 개요 */}
+        <section className="py-16 bg-muted">
+          <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <Card className="mb-12 border-2 border-primary/20 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
@@ -299,8 +303,11 @@ export default function SiteInfoPage() {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+          </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
 
       <style jsx global>{`
         @keyframes fade-in {

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { api, endpoints } from "@/lib/api";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 
 export default function AboutPage() {
   const [academyInfo, setAcademyInfo] = useState<any>(null);
@@ -25,30 +27,40 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-4">코딩메이커학원</h1>
-          <p className="text-xl mb-8">미래를 코딩하다, 광양의 IT 교육 거점</p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/curriculum">
-              <Button size="lg" variant="secondary">
-                커리큘럼 보기
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button size="lg" variant="outline" className="bg-white/10 border-white hover:bg-white/20">
-                상담 신청
-              </Button>
-            </Link>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main className="flex-1 bg-background">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24 text-center">
+            <p className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary mb-6">
+              <span className="material-symbols-outlined text-base">info</span>
+              학원 소개
+            </p>
+            <h1 className="text-4xl font-black leading-tight tracking-tight text-foreground sm:text-5xl mb-6">
+              미래를 코딩하다, <span className="text-primary">코딩메이커학원</span>
+            </h1>
+            <p className="text-lg text-secondary mb-8 max-w-3xl mx-auto">
+              광양의 IT 교육 거점, 23년 경력 임베디드 전문가와 20년 경력 웹툰 작가가 이끄는 실무 중심 교육
+            </p>
+            <div className="flex gap-4 justify-center">
+              <Link href="/curriculum">
+                <Button size="lg">
+                  커리큘럼 보기
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button size="lg" variant="outline">
+                  상담 신청
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* About Section */}
-      <section className="py-16 container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
+        {/* About Section */}
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4 max-w-4xl">
           <h2 className="text-3xl font-bold mb-8 text-center">학원 소개</h2>
           
           <Card className="mb-8">
@@ -253,8 +265,10 @@ export default function AboutPage() {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 }

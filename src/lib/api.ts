@@ -146,4 +146,8 @@ export const endpoints = {
     community: "/analytics/community",
     users: "/analytics/users",
   },
+  admin: {
+    users: "/users",
+    userProfile: (userId: string) => `/users/${userId}/profile`,
+  },
 };

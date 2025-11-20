@@ -5,15 +5,19 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminCMSPage() {
+  const { user } = useAuth();
+
   return (
     <DashboardLayout
-      userName="김 원장"
+      userName={user?.name || "관리자"}
       userSubtitle="코딩메이커 아카데미"
       sidebarItems={adminSidebar}
       headerTitle="콘텐츠 관리 (CMS)"
       headerSubtitle="학원 정보 및 사이트 설정을 관리하세요"
+      requiredTier={1}
     >
       <div className="space-y-6">
         <Card>

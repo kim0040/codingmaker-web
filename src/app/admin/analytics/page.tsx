@@ -3,6 +3,7 @@
 import { adminSidebar } from "@/data/admin";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Recharts는 추후 설치 예정: npm install recharts
 // import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -26,13 +27,16 @@ const classSubmissionData = [
 ];
 
 export default function AdminAnalyticsPage() {
+  const { user } = useAuth();
+
   return (
     <DashboardLayout
-      userName="김 원장"
+      userName={user?.name || "관리자"}
       userSubtitle="코딩메이커 아카데미"
       sidebarItems={adminSidebar}
       headerTitle="데이터 분석"
       headerSubtitle="학원 운영 통계 및 트렌드를 확인하세요"
+      requiredTier={2}
     >
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-4">

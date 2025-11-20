@@ -24,10 +24,13 @@ export default function AuthPage() {
   const [mode, setMode] = useState<(typeof tabs)[number]["value"]>("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
@@ -70,7 +73,14 @@ export default function AuthPage() {
                         ? "bg-background text-foreground shadow-sm"
                         : "hover:text-foreground"
                     }`}
-                    onClick={() => setMode(tab.value)}
+                    onClick={() => {
+                      setMode(tab.value);
+                      setError("");
+                      setPassword("");
+                      setPasswordConfirm("");
+                      setShowPassword(false);
+                      setShowPasswordConfirm(false);
+                    }}
                   >
                     {tab.label}
                   </button>
@@ -87,6 +97,12 @@ export default function AuthPage() {
                     await login(username, password);
                     router.push("/");
                   } else {
+                    // 회원가입 시 비밀번호 확인
+                    if (password !== passwordConfirm) {
+                      setError("비밀번호가 일치하지 않습니다.");
+                      setIsLoading(false);
+                      return;
+                    }
                     const response: any = await api.post(endpoints.auth.register, {
                       username,
                       password,
@@ -97,6 +113,8 @@ export default function AuthPage() {
                     });
                     if (response.success) {
                       setMode("login");
+                      setPassword("");
+                      setPasswordConfirm("");
                       setError("회원가입이 완료되었습니다. 로그인해주세요.");
                     }
                   }
@@ -140,21 +158,64 @@ export default function AuthPage() {
                   </label>
                   <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
                     비밀번호
-                    <div className="flex items-center gap-2">
+                    <div className="relative">
                       <Input 
-                        type="password" 
+                        type={showPassword ? "text" : "password"}
                         placeholder="비밀번호" 
-                        className="h-12"
+                        className="h-12 pr-12"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-xl">
+                          {showPassword ? "visibility_off" : "visibility"}
+                        </span>
+                      </button>
                     </div>
                   </label>
+                  {mode === "signup" && (
+                    <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
+                      비밀번호 확인
+                      <div className="relative">
+                        <Input 
+                          type={showPasswordConfirm ? "text" : "password"}
+                          placeholder="비밀번호 확인" 
+                          className="h-12 pr-12"
+                          value={passwordConfirm}
+                          onChange={(e) => setPasswordConfirm(e.target.value)}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-xl">
+                            {showPasswordConfirm ? "visibility_off" : "visibility"}
+                          </span>
+                        </button>
+                      </div>
+                      {passwordConfirm && password !== passwordConfirm && (
+                        <span className="text-xs text-red-600 dark:text-red-400">비밀번호가 일치하지 않습니다</span>
+                      )}
+                      {passwordConfirm && password === passwordConfirm && (
+                        <span className="text-xs text-green-600 dark:text-green-400">비밀번호가 일치합니다</span>
+                      )}
+                    </label>
+                  )}
                 </div>
 
                 {error && (
-                  <div className={`text-sm p-3 rounded-lg ${error.includes("완료") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                  <div className={`text-sm p-3 rounded-lg ${
+                    error.includes("완료") 
+                      ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800" 
+                      : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"
+                  }`}>
                     {error}
                   </div>
                 )}

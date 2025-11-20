@@ -3,10 +3,11 @@
 import type { ReactNode } from "react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { SidebarItem } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 type DashboardLayoutProps = {
   userName: string;
@@ -17,6 +18,7 @@ type DashboardLayoutProps = {
   headerSubtitle?: string;
   headerActions?: ReactNode;
   children: ReactNode;
+  requiredTier?: number; // 최소 필요 Tier (낮을수록 높은 권한)
 };
 
 export function DashboardLayout({
@@ -28,10 +30,44 @@ export function DashboardLayout({
   headerSubtitle,
   headerActions,
   children,
+  requiredTier = 3, // 기본값: 학생도 접근 가능
 }: DashboardLayoutProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout, isLoading } = useAuth();
+
+  // 로그인 및 권한 체크
+  useEffect(() => {
+    if (!isLoading) {
+      if (!user) {
+        // 로그인 안 되어 있으면 로그인 페이지로
+        alert("로그인이 필요합니다.");
+        router.push("/auth");
+        return;
+      }
+      
+      if (user.tier > requiredTier) {
+        // 권한 부족
+        alert("접근 권한이 없습니다.");
+        router.push("/");
+        return;
+      }
+    }
+  }, [user, isLoading, requiredTier, router]);
+
+  // 로그인 확인 중이거나 권한 체크 중
+  if (isLoading || !user || user.tier > requiredTier) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   // 모바일에서만 페이지 이동 시 사이드바 닫기
   useEffect(() => {
@@ -84,7 +120,12 @@ export function DashboardLayout({
             <span className="material-symbols-outlined text-base">help_outline</span>
             도움말
           </button>
-          <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted" onClick={() => { if (confirm('로그아웃 하시겠습니까?')) window.location.href = '/'; }}>
+          <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted" onClick={() => { 
+            if (confirm('로그아웃 하시겠습니까?')) {
+              logout();
+              router.push('/');
+            }
+          }}>
             <span className="material-symbols-outlined text-base">logout</span>
             로그아웃
           </button>
@@ -164,7 +205,12 @@ export function DashboardLayout({
                         설정
                       </button>
                       <button 
-                        onClick={() => { if (confirm('로그아웃 하시겠습니까?')) window.location.href = '/'; }}
+                        onClick={() => { 
+                          if (confirm('로그아웃 하시겠습니까?')) {
+                            logout();
+                            router.push('/');
+                          }
+                        }}
                         className="block w-full rounded-md px-3 py-1 text-left hover:bg-muted"
                       >
                         로그아웃

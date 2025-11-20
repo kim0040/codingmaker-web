@@ -4,6 +4,7 @@ import { adminSidebar } from "@/data/admin";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const classes = [
   { name: "Alpha 클래스", students: 8, instructor: "이선생님", schedule: "월/수/금 14:00-15:30", status: "진행중" },
@@ -13,13 +14,16 @@ const classes = [
 ];
 
 export default function AdminClassesPage() {
+  const { user } = useAuth();
+
   return (
     <DashboardLayout
-      userName="김 원장"
+      userName={user?.name || "관리자"}
       userSubtitle="코딩메이커 아카데미"
       sidebarItems={adminSidebar}
       headerTitle="클래스 관리"
       headerSubtitle="전체 클래스 현황을 관리하세요"
+      requiredTier={2}
     >
       <div className="space-y-6">
         <div className="flex items-center justify-between">

@@ -1,14 +1,15 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   adminSidebar,
-  adminStats,
-  studentTable,
+  adminStats as defaultStats,
+  studentTable as defaultStudentTable,
   attendanceCalendar,
   classDistribution,
   weeklyAttendance,
   todaySchedule,
-  communityFeed,
+  communityFeed as defaultCommunityFeed,
 } from "@/data/admin";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,9 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { useAuth } from "@/contexts/AuthContext";
+import { api, endpoints } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const trendColor = {
   positive: "text-green-500",
@@ -26,6 +30,107 @@ const trendColor = {
 } as const;
 
 export default function AdminDashboardPage() {
+  const { user, token, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [communityPosts, setCommunityPosts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/auth");
+      return;
+    }
+    
+    if (user && user.tier > 2) {
+      alert("관리자 권한이 필요합니다.");
+      router.push("/");
+      return;
+    }
+
+    if (user && token) {
+      fetchDashboardData();
+      fetchCommunityPosts();
+    }
+  }, [user, token, authLoading]);
+
+  const fetchDashboardData = async () => {
+    if (!token) return;
+    try {
+      const response: any = await api.get(endpoints.analytics.dashboard, token);
+      if (response.success) {
+        setDashboardData(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchCommunityPosts = async () => {
+    if (!token) return;
+    try {
+      const response: any = await api.get(endpoints.community.posts, token);
+      if (response.success && response.data && response.data.posts) {
+        setCommunityPosts(response.data.posts.slice(0, 5)); // 최근 5개만
+      }
+    } catch (error) {
+      console.error("Failed to fetch community posts:", error);
+    }
+  };
+
+  const adminStats = dashboardData ? [
+    {
+      label: "총 학생 수",
+      value: dashboardData.totalStudents || 0,
+      trend: `+${dashboardData.newStudentsThisMonth || 0} this month`,
+      trendColor: "positive" as const,
+    },
+    {
+      label: "평균 출석률",
+      value: `${dashboardData.averageAttendance || 0}%`,
+      trend: dashboardData.attendanceTrend || "+2.5% from last week",
+      trendColor: "positive" as const,
+    },
+    {
+      label: "진행 중인 과정",
+      value: dashboardData.activeCourses || 0,
+      trend: "",
+      trendColor: "positive" as const,
+    },
+    {
+      label: "커뮤니티 활동",
+      value: dashboardData.communityPosts || 0,
+      trend: `+${dashboardData.newPostsThisWeek || 0} this week`,
+      trendColor: "positive" as const,
+    },
+  ] : defaultStats;
+
+  const communityFeed = communityPosts.length > 0 ? communityPosts.map(post => ({
+    title: post.title,
+    meta: `${post.author?.name || '익명'} • ${new Date(post.createdAt).toLocaleDateString()}`,
+  })) : defaultCommunityFeed;
+
+  if (authLoading || isLoading) {
+    return (
+      <DashboardLayout
+        userName="로딩 중..."
+        userSubtitle="코딩메이커 아카데미"
+        sidebarItems={adminSidebar}
+        headerTitle="관리자 대시보드"
+        headerSubtitle="데이터를 불러오는 중..."
+        requiredTier={2}
+      >
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">데이터를 불러오는 중...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
   const headerActions = (
     <>
       <button
@@ -55,12 +160,13 @@ export default function AdminDashboardPage() {
 
   return (
     <DashboardLayout
-      userName="김 원장"
+      userName={user?.name || "관리자"}
       userSubtitle="코딩메이커 아카데미"
       sidebarItems={adminSidebar}
       headerTitle="관리자 대시보드"
-      headerSubtitle="김 원장님, 환영합니다!"
+      headerSubtitle={`${user?.name || "관리자"}님, 환영합니다!`}
       headerActions={headerActions}
+      requiredTier={2}
     >
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {adminStats.map((stat) => (
@@ -94,7 +200,7 @@ export default function AdminDashboardPage() {
                     />
                   </div>
                   <select className="rounded-lg border border-transparent bg-muted px-3 py-2 text-sm focus:border-primary focus:ring-primary">
-                    {studentTable.filterClasses.map((cls) => (
+                    {defaultStudentTable.filterClasses.map((cls: string) => (
                       <option key={cls}>{cls}</option>
                     ))}
                   </select>
@@ -110,7 +216,7 @@ export default function AdminDashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {studentTable.rows.map((row) => (
+                    {defaultStudentTable.rows.map((row: any) => (
                       <tr key={row.name} className="border-t border-border/60">
                         <td className="py-3 font-medium text-foreground">{row.name}</td>
                         <td className="py-3 text-muted-foreground">{row.className}</td>
