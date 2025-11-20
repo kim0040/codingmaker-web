@@ -1,14 +1,47 @@
 "use client";
 
-import { communityFilters, communityPosts } from "@/data/community";
+import { useState, useEffect } from "react";
+import { communityFilters } from "@/data/community";
 import { Button } from "@/components/ui/button";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { studentSidebar } from "@/data/student";
+import { useAuth } from "@/contexts/AuthContext";
+import { api, endpoints } from "@/lib/api";
 
 export default function CommunityPage() {
+  const { user, token } = useAuth();
+  const [posts, setPosts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchPosts();
+  }, [token]);
+
+  const fetchPosts = async () => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response: any = await api.get(
+        `${endpoints.community.posts}?page=1&limit=20`,
+        token
+      );
+      if (response.success && response.data?.posts) {
+        setPosts(response.data.posts);
+      }
+    } catch (err: any) {
+      console.error("Failed to fetch posts:", err);
+      setError("게시글을 불러올 수 없습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <DashboardLayout
-      userName="김코딩"
+      userName={user?.name || "사용자"}
       userSubtitle="커뮤니티"
       sidebarItems={studentSidebar}
       bottomNavItems={[
@@ -91,24 +124,48 @@ export default function CommunityPage() {
                 </tr>
               </thead>
               <tbody>
-                {communityPosts.map((post) => (
-                  <tr 
-                    key={post.id} 
-                    onClick={() => window.location.href = `/community/${post.id}`}
-                    className="border-t border-border hover:bg-muted/40 cursor-pointer transition-colors"
-                  >
-                    <td className="px-4 py-3 text-muted-foreground">{post.id}</td>
-                    <td className="px-4 py-3 font-semibold text-foreground">
-                      <a className="hover:text-primary" href="#">
-                        {post.title} <span className="text-muted-foreground">[{post.replies}]</span>
-                      </a>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                      게시글을 불러오는 중...
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{post.author}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{post.date}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{post.views}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{post.likes}</td>
                   </tr>
-                ))}
+                ) : error ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-red-600">
+                      {error}
+                    </td>
+                  </tr>
+                ) : posts.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                      작성된 게시글이 없습니다. 첫 게시글을 작성해보세요!
+                    </td>
+                  </tr>
+                ) : (
+                  posts.map((post: any, index: number) => (
+                    <tr 
+                      key={post.id} 
+                      onClick={() => window.location.href = `/community/${post.id}`}
+                      className="border-t border-border hover:bg-muted/40 cursor-pointer transition-colors"
+                    >
+                      <td className="px-4 py-3 text-muted-foreground">{index + 1}</td>
+                      <td className="px-4 py-3 font-semibold text-foreground">
+                        <span className="hover:text-primary cursor-pointer">
+                          {post.title} {post.commentCount > 0 && (
+                            <span className="text-muted-foreground">[{post.commentCount}]</span>
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{post.author?.name || "익명"}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(post.createdAt).toLocaleDateString("ko-KR")}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{post.views || 0}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{post.likes || 0}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

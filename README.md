@@ -120,12 +120,18 @@ codingmaker-web/
 
 | 문서 | 설명 |
 |------|------|
-| **[FINAL_HANDOVER_GUIDE.md](./FINAL_HANDOVER_GUIDE.md)** | 백엔드 개발자 인수인계 가이드 ⭐ |
-| **[SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md)** | 보안 강화 체크리스트 |
-| [BACKEND_INTEGRATION.md](./BACKEND_INTEGRATION.md) | API 연결 가이드 |
-| [TIER_ACCESS_SPEC.md](./TIER_ACCESS_SPEC.md) | 티어별 접근 권한 명세 |
-| [ENV_SETUP.md](./ENV_SETUP.md) | 환경변수 설정 방법 |
-| [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) | 구현 현황 |
+| [CMLMS 지시서.md](./CMLMS 지시서.md) | 코딩메이커 학원 통합 관리 시스템 최상위 요구사항/기획 명세 |
+| [코딩 메이커 정보.md](./코딩 메이커 정보.md) | 실제 학원 정보·과정·후기 정리 (도메인 데이터) |
+| [BACKEND_DESIGN_PLAN_1_OVERVIEW.md](./BACKEND_DESIGN_PLAN_1_OVERVIEW.md) | 백엔드 개요 및 아키텍처, 프로젝트 구조, 개발 Phase |
+| [BACKEND_DESIGN_PLAN_2_DATABASE.md](./BACKEND_DESIGN_PLAN_2_DATABASE.md) | 데이터베이스/Prisma 스키마 및 인덱스 설계 |
+| [BACKEND_DESIGN_PLAN_3_API.md](./BACKEND_DESIGN_PLAN_3_API.md) | 인증/출석/커뮤니티/채팅 등 API 명세 |
+| [BACKEND_DESIGN_PLAN_4_SECURITY.md](./BACKEND_DESIGN_PLAN_4_SECURITY.md) | AES-256, JWT, 권한, RateLimit 등 보안/미들웨어 설계 |
+| [FINAL_HANDOVER_GUIDE.md](./FINAL_HANDOVER_GUIDE.md) | 백엔드 개발자 인수인계 종합 가이드 (레퍼런스용) |
+| [FINAL_SUBMISSION_CHECKLIST.md](./FINAL_SUBMISSION_CHECKLIST.md) | 프론트엔드 완성도 및 백엔드 TODO 최종 체크리스트 |
+| [TIER_ACCESS_SPEC.md](./TIER_ACCESS_SPEC.md) | 티어별 접근 권한 및 페이지 접근 명세 |
+| [FRONTEND_TIER_IMPLEMENTATION.md](./FRONTEND_TIER_IMPLEMENTATION.md) | 프론트엔드 티어별 권한 구현 가이드 |
+| [ENV_SETUP.md](./ENV_SETUP.md) | 환경변수(.env) 설정 방법 |
+| [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) | 보안 강화 체크리스트 (배포 전 점검용) |
 
 ---
 

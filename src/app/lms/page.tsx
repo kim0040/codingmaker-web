@@ -20,6 +20,23 @@ const LANGUAGES = [
   { label: "C", value: "c" },
 ];
 
+declare global {
+  interface Window {
+    __monacoErrorPatched?: boolean;
+  }
+}
+
+if (typeof window !== "undefined" && !window.__monacoErrorPatched) {
+  const originalConsoleError = console.error;
+  console.error = (...args) => {
+    if (typeof args[0] === "string" && args[0].includes("Canceled")) {
+      return;
+    }
+    originalConsoleError.apply(console, args);
+  };
+  window.__monacoErrorPatched = true;
+}
+
 export default function LmsPage() {
   const [language, setLanguage] = useState<(typeof LANGUAGES)[number]["value"]>("python");
   const [studentCode, setStudentCode] = useState("# 과제를 작성해 보세요\n");
@@ -29,26 +46,11 @@ export default function LmsPage() {
   const isMountedRef = useRef(true);
 
   useEffect(() => {
-    // 컴포넌트 마운트 상태 추적
     isMountedRef.current = true;
-
-    // Monaco Editor 에러 억제
-    const originalError = console.error;
-    console.error = (...args) => {
-      if (
-        typeof args[0] === 'string' && 
-        (args[0].includes('Canceled') || args[0].includes('ERR'))
-      ) {
-        return; // Monaco Editor Canceled 에러 무시
-      }
-      originalError.apply(console, args);
-    };
 
     return () => {
       isMountedRef.current = false;
-      console.error = originalError;
-      
-      // 에디터 정리
+
       if (editorRef.current) {
         try {
           editorRef.current.dispose?.();

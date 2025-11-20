@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { api, endpoints } from '@/lib/api';
 
 /**
  * 사용자 권한 체계 (Tier System)
@@ -46,32 +47,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const storedToken = localStorage.getItem('auth_token');
     if (storedToken) {
-      // TODO: 백엔드 연결 시 토큰 유효성 검사
-      // fetchUserProfile(storedToken);
       setToken(storedToken);
+      // 토큰 유효성 검사 및 사용자 정보 가져오기
+      fetchUserProfile(storedToken);
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
+
+  const fetchUserProfile = async (authToken: string) => {
+    try {
+      const response: any = await api.get(endpoints.auth.me, authToken);
+      if (response.success && response.data) {
+        setUser(response.data);
+      } else {
+        logout();
+      }
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      logout();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const login = async (username: string, password: string) => {
     try {
-      // TODO: 백엔드 API 연결
-      // const response = await api.post(endpoints.auth.login, { username, password });
-      // const { token, user } = response;
+      const response: any = await api.post(endpoints.auth.login, { username, password });
       
-      // 임시 Mock 로그인
-      const mockToken = 'mock-jwt-token';
-      const mockUser: User = {
-        id: '1',
-        username,
-        name: username === 'admin' ? '김원장' : '김코딩',
-        tier: username === 'admin' ? 1 : 3,
-        role: username === 'admin' ? 'ADMIN' : 'STUDENT',
-      };
-
-      setToken(mockToken);
-      setUser(mockUser);
-      localStorage.setItem('auth_token', mockToken);
+      if (response.success && response.data) {
+        const { token: authToken, user: userData } = response.data;
+        
+        setToken(authToken);
+        setUser(userData);
+        localStorage.setItem('auth_token', authToken);
+      } else {
+        throw new Error('로그인에 실패했습니다.');
+      }
     } catch (error) {
       console.error('Login failed:', error);
       throw error;

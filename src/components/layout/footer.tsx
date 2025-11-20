@@ -27,18 +27,23 @@ export function Footer() {
             <h4 className="font-bold text-foreground">바로가기</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/#about" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   학원소개
                 </Link>
               </li>
               <li>
-                <Link href="/#courses" className="text-muted-foreground hover:text-primary transition-colors">
-                  과정안내 (코딩/임베디드/웹툰)
+                <Link href="/curriculum" className="text-muted-foreground hover:text-primary transition-colors">
+                  커리큘럼
                 </Link>
               </li>
               <li>
-                <Link href="/#highlights" className="text-muted-foreground hover:text-primary transition-colors">
-                  학원특징
+                <Link href="/location" className="text-muted-foreground hover:text-primary transition-colors">
+                  오시는 길
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                  상담신청
                 </Link>
               </li>
               <li>
@@ -64,8 +69,14 @@ export function Footer() {
                 </Link>
               )}
             </div>
-            <div className="mt-4 text-xs text-muted-foreground">
+            <div className="mt-4 text-xs text-muted-foreground space-y-1">
               <p>© 2024 CodingMaker Academy. All rights reserved.</p>
+              <Link href="/site-info" className="block hover:text-primary transition-colors">
+                <span className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-xs">info</span>
+                  사이트 정보
+                </span>
+              </Link>
             </div>
           </div>
         </div>

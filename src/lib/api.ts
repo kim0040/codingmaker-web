@@ -111,46 +111,39 @@ export const endpoints = {
   users: {
     list: '/users',
     byId: (id: string) => `/users/${id}`,
-    update: (id: string) => `/users/${id}`,
-    delete: (id: string) => `/users/${id}`,
   },
-
-  // Attendance
   attendance: {
-    checkin: '/attendance/checkin',
-    list: '/attendance',
-    byUser: (userId: string) => `/attendance/user/${userId}`,
-    byDate: (date: string) => `/attendance/date/${date}`,
+    checkin: "/attendance/checkin",
+    user: (userId: string) => `/attendance/user/${userId}`,
   },
-
-  // Courses (동적 커리큘럼)
   courses: {
-    list: '/courses',
-    byId: (id: string) => `/courses/${id}`,
-    create: '/courses',
+    list: "/courses",
+    create: "/courses",
     update: (id: string) => `/courses/${id}`,
     delete: (id: string) => `/courses/${id}`,
   },
-
-  // Academy Info (CMS)
   academy: {
-    info: '/academy/info',
-    update: '/academy/info',
+    info: "/academy/info",
+    update: "/academy/info",
   },
-
-  // Community
   community: {
-    posts: '/community/posts',
-    byId: (id: string) => `/community/posts/${id}`,
-    create: '/community/posts',
-    update: (id: string) => `/community/posts/${id}`,
-    delete: (id: string) => `/community/posts/${id}`,
+    posts: "/community/posts",
+    post: (id: string) => `/community/posts/${id}`,
+    deletePost: (id: string) => `/community/posts/${id}`,
+    like: (id: string) => `/community/posts/${id}/like`,
+    comments: (postId: string) => `/community/posts/${postId}/comments`,
+    deleteComment: (postId: string, commentId: string) =>
+      `/community/posts/${postId}/comments/${commentId}`,
   },
-
-  // Analytics
+  chat: {
+    rooms: "/chat/rooms",
+    messages: (roomId: string) => `/chat/rooms/${roomId}/messages`,
+    deleteMessage: (messageId: string) => `/chat/messages/${messageId}`,
+  },
   analytics: {
-    attendance: '/analytics/attendance',
-    classStats: '/analytics/class-stats',
-    userActivity: '/analytics/user-activity',
+    dashboard: "/analytics/dashboard",
+    attendance: "/analytics/attendance",
+    community: "/analytics/community",
+    users: "/analytics/users",
   },
 };

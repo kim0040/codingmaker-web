@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { kioskMeta, kioskKeyboard } from "@/data/kiosk";
 import { Button } from "@/components/ui/button";
+import { api, endpoints } from "@/lib/api";
 
 const DUPLICATE_RESULTS = [
   "홍길동A (중등반)",
@@ -13,6 +14,9 @@ export default function KioskPage() {
   const [value, setValue] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [showDuplicate, setShowDuplicate] = useState(false);
+  const [studentName, setStudentName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const displayValue = useMemo(() => {
     if (!value) return "";
@@ -36,17 +40,38 @@ export default function KioskPage() {
     setValue((prev) => `${prev}${key}`);
   };
 
-  const handleSubmit = () => {
-    if (!value) return;
-    if (value.startsWith("홍길동")) {
-      setShowDuplicate(true);
-      setShowSuccess(false);
-    } else {
-      setShowSuccess(true);
-      setShowDuplicate(false);
-      // TODO: 성공 효과음 재생 로직 위치
-      // playSuccessSound();
-      setTimeout(() => setShowSuccess(false), 3000);
+  const handleSubmit = async () => {
+    if (!value || value.length !== 4) return;
+    
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response: any = await api.post(endpoints.attendance.checkin, {
+        tag: value,
+      });
+
+      if (response.success && response.data) {
+        setStudentName(response.data.studentName);
+        setShowSuccess(true);
+        setShowDuplicate(false);
+        // TODO: 성공 효과음 재생
+        setTimeout(() => {
+          setShowSuccess(false);
+          setValue("");
+        }, 3000);
+      } else {
+        setError("출석 체크에 실패했습니다.");
+      }
+    } catch (err: any) {
+      console.error("Attendance check error:", err);
+      if (err?.message?.includes("not found") || err?.message?.includes("등록되지")) {
+        setError("등록되지 않은 태그입니다. 관리자에게 문의하세요.");
+      } else {
+        setError("출석 체크 중 오류가 발생했습니다.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,10 +93,16 @@ export default function KioskPage() {
                   {value || <span className="text-muted-foreground text-3xl">숫자 4자리를 입력하세요</span>}
                 </p>
               </div>
-              {value && value.length === 4 && (
+              {value && value.length === 4 && !error && (
                 <p className="mt-4 text-sm text-green-600 font-semibold flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-base">check_circle</span>
                   입력 완료! 출석하기 버튼을 눌러주세요
+                </p>
+              )}
+              {error && (
+                <p className="mt-4 text-sm text-red-600 font-semibold flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined text-base">error</span>
+                  {error}
                 </p>
               )}
             </div>
@@ -109,12 +140,21 @@ export default function KioskPage() {
           <div className="flex justify-center">
             <Button
               size="lg"
-              disabled={value.length !== 4}
+              disabled={value.length !== 4 || isLoading}
               className="h-20 w-full max-w-md rounded-2xl text-2xl font-bold shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSubmit}
             >
-              <span className="material-symbols-outlined text-3xl mr-2">check_circle</span>
-              {kioskMeta.buttonLabel}
+              {isLoading ? (
+                <>
+                  <span className="material-symbols-outlined text-3xl mr-2 animate-spin">refresh</span>
+                  처리 중...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-3xl mr-2">check_circle</span>
+                  {kioskMeta.buttonLabel}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -127,7 +167,8 @@ export default function KioskPage() {
               <span className="material-symbols-outlined !text-4xl">task_alt</span>
             </div>
             <h2 className="mt-6 text-3xl font-bold">출석 완료!</h2>
-            <p className="mt-2 text-muted-foreground">입력이 확인되었습니다. 잠시 후 화면이 초기화됩니다.</p>
+            <p className="mt-4 text-xl font-semibold text-primary">{studentName}님</p>
+            <p className="mt-2 text-muted-foreground">출석이 확인되었습니다. 잠시 후 화면이 초기화됩니다.</p>
           </div>
         </div>
       )}

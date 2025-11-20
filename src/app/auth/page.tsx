@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { api, endpoints } from "@/lib/api";
 
 const tabs = [
   { value: "login", label: "로그인" },
@@ -19,6 +22,14 @@ const tabs = [
 
 export default function AuthPage() {
   const [mode, setMode] = useState<(typeof tabs)[number]["value"]>("login");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">
@@ -66,42 +77,87 @@ export default function AuthPage() {
                 ))}
               </div>
 
-              <form className="space-y-3">
+              <form className="space-y-3" onSubmit={async (e) => {
+                e.preventDefault();
+                setError("");
+                setIsLoading(true);
+
+                try {
+                  if (mode === "login") {
+                    await login(username, password);
+                    router.push("/");
+                  } else {
+                    const response: any = await api.post(endpoints.auth.register, {
+                      username,
+                      password,
+                      name,
+                      phone,
+                      tag: phone.slice(-4),
+                      role: "STUDENT",
+                    });
+                    if (response.success) {
+                      setMode("login");
+                      setError("회원가입이 완료되었습니다. 로그인해주세요.");
+                    }
+                  }
+                } catch (err: any) {
+                  setError(err?.message || "오류가 발생했습니다.");
+                } finally {
+                  setIsLoading(false);
+                }
+              }}>
                 {mode === "signup" && (
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <Input placeholder="이름" aria-label="이름" />
-                    <Input placeholder="연락처" aria-label="연락처" />
+                    <Input 
+                      placeholder="이름" 
+                      aria-label="이름"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                    <Input 
+                      placeholder="연락처" 
+                      aria-label="연락처"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                    />
                   </div>
                 )}
 
                 <div className="space-y-4">
                   <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
-                    이메일 주소
+                    {mode === "login" ? "아이디" : "아이디 (이메일)"}
                     <Input
-                      type="email"
-                      placeholder="example@email.com"
-                      aria-label="이메일"
+                      type="text"
+                      placeholder={mode === "login" ? "아이디" : "example@email.com"}
+                      aria-label="아이디"
                       className="h-12"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
                     />
                   </label>
                   <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
                     비밀번호
                     <div className="flex items-center gap-2">
-                      <Input type="password" placeholder="비밀번호" className="h-12" />
-                      <Button type="button" variant="ghost" className="px-3">
-                        <span className="material-symbols-outlined text-base">
-                          visibility_off
-                        </span>
-                      </Button>
+                      <Input 
+                        type="password" 
+                        placeholder="비밀번호" 
+                        className="h-12"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
                     </div>
                   </label>
-                  {mode === "signup" && (
-                    <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
-                      비밀번호 확인
-                      <Input type="password" placeholder="비밀번호 확인" className="h-12" />
-                    </label>
-                  )}
                 </div>
+
+                {error && (
+                  <div className={`text-sm p-3 rounded-lg ${error.includes("완료") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                    {error}
+                  </div>
+                )}
 
                 {mode === "login" && (
                   <div className="text-right text-sm">
@@ -114,8 +170,12 @@ export default function AuthPage() {
                   </div>
                 )}
 
-                <Button className="h-12 w-full text-base font-bold">
-                  {mode === "login" ? "로그인" : "회원가입"}
+                <Button 
+                  type="submit"
+                  className="h-12 w-full text-base font-bold"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "처리 중..." : mode === "login" ? "로그인" : "회원가입"}
                 </Button>
               </form>
 

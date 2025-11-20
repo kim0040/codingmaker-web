@@ -36,7 +36,7 @@ export default function Home() {
                 23년 경력 임베디드 전문가와 20년 경력 웹툰 작가가 이끄는 실무 중심 커리큘럼. 소수 정예·맞춤형 상담으로 학생부터 직장인까지 모두 성장합니다.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/#contact">
+                <Link href="/contact">
                   <Button size="lg" className="px-6">
                     상담 신청하기
                   </Button>

@@ -23,17 +23,17 @@ export function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex flex-1 justify-end gap-8">
           <div className="flex items-center gap-8">
-            <Link href="/#about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               학원소개
             </Link>
-            <Link href="/#courses" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              과정안내
+            <Link href="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              커리큘럼
             </Link>
-            <Link href="/#highlights" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              학원특징
+            <Link href="/location" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              오시는 길
             </Link>
-            <Link href="/#contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              상담문의
+            <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              상담신청
             </Link>
           </div>
           <div className="flex items-center gap-2">
@@ -66,32 +66,32 @@ export function Header() {
         <div className="md:hidden border-t bg-background">
           <nav className="flex flex-col space-y-1 p-4">
             <Link 
-              href="/#about" 
+              href="/about" 
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
             >
               학원소개
             </Link>
             <Link 
-              href="/#courses"
+              href="/curriculum"
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
             >
-              과정안내
+              커리큘럼
             </Link>
             <Link 
-              href="/#highlights"
+              href="/location"
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
             >
-              학원특징
+              오시는 길
             </Link>
             <Link 
-              href="/#contact"
+              href="/contact"
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
             >
-              상담문의
+              상담신청
             </Link>
             <div className="border-t pt-2 mt-2 space-y-2">
               <Link 
