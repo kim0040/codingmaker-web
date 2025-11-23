@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { api, endpoints } from "@/lib/api";
+import { APIError, api, endpoints } from "@/lib/api";
 import type { ApiResponse } from "@/types/api";
 
 const tabs = [
@@ -120,10 +120,12 @@ export default function AuthPage() {
                     }
                   }
                 } catch (err: unknown) {
-                  if (err instanceof Error) {
+                  if (err instanceof APIError) {
+                    setError(err.message);
+                  } else if (err instanceof Error) {
                     setError(err.message);
                   } else {
-                    setError("오류가 발생했습니다.");
+                    setError("서버와의 통신 중 오류가 발생했습니다.");
                   }
                 } finally {
                   setIsLoading(false);

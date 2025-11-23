@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { api, endpoints } from '@/lib/api';
+import { APIError, api, endpoints } from '@/lib/api';
 import type { ApiResponse, AuthPayload } from '@/types/api';
 
 /**
@@ -78,16 +78,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.success && response.data) {
         const { token: authToken, user: userData } = response.data;
-        
+
         setToken(authToken);
         setUser(userData);
         localStorage.setItem('auth_token', authToken);
       } else {
-        throw new Error('로그인에 실패했습니다.');
+        throw new APIError(401, 'Unauthorized', '아이디 또는 비밀번호가 올바르지 않습니다.');
       }
     } catch (error) {
       console.error('Login failed:', error);
-      throw error;
+      if (error instanceof APIError) {
+        if (error.status === 400 || error.status === 401) {
+          throw new APIError(error.status, error.statusText, '아이디 또는 비밀번호가 올바르지 않습니다.');
+        }
+        throw error;
+      }
+      throw new Error('서버와의 통신 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 

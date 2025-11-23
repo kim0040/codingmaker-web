@@ -43,13 +43,14 @@ export function Header() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {user ? (
-              <>
-                <span className="text-sm text-muted-foreground">
-                  {user.name}님
-                </span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 rounded-full border border-border px-3 py-1 shadow-sm transition hover:border-primary">
+                  <span className="material-symbols-outlined text-base text-primary">account_circle</span>
+                  <span className="text-sm font-semibold text-foreground">{user.name}</span>
+                </div>
                 <Link href="/admin">
-                  <Button variant="outline" className="font-bold">
-                    <span className="material-symbols-outlined text-base mr-1">dashboard</span>
+                  <Button variant="outline" className="font-bold gap-1">
+                    <span className="material-symbols-outlined text-base">dashboard</span>
                     대시보드
                   </Button>
                 </Link>
@@ -59,16 +60,16 @@ export function Header() {
                 }}>
                   로그아웃
                 </Button>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <Link href="/auth">
                   <Button variant="ghost" className="font-bold">로그인</Button>
                 </Link>
                 <Link href="/auth">
                   <Button className="font-bold">회원가입</Button>
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </nav>
@@ -122,21 +123,22 @@ export function Header() {
             <div className="border-t pt-2 mt-2 space-y-2">
               {user ? (
                 <>
-                  <div className="px-4 py-2 text-sm text-muted-foreground">
-                    {user.name}님
+                  <div className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground shadow-sm">
+                    <span className="material-symbols-outlined text-base text-primary">account_circle</span>
+                    {user.name}
                   </div>
-                  <Link 
+                  <Link
                     href="/admin"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Button variant="outline" className="w-full font-bold justify-start">
-                      <span className="material-symbols-outlined text-base mr-2">dashboard</span>
+                    <Button variant="outline" className="w-full font-bold justify-start gap-2">
+                      <span className="material-symbols-outlined text-base">dashboard</span>
                       대시보드
                     </Button>
                   </Link>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full font-bold justify-start" 
+                  <Button
+                    variant="ghost"
+                    className="w-full font-bold justify-start"
                     onClick={() => {
                       logout();
                       setIsMobileMenuOpen(false);
@@ -148,7 +150,7 @@ export function Header() {
                 </>
               ) : (
                 <>
-                  <Link 
+                  <Link
                     href="/auth"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

@@ -41,6 +41,12 @@ export default function Home() {
                     상담 신청하기
                   </Button>
                 </Link>
+                <Link href="/intro">
+                  <Button size="lg" variant="secondary" className="px-6">
+                    <span className="material-symbols-outlined text-base">explore</span>
+                    상세 소개 보기
+                  </Button>
+                </Link>
                 <a href={`tel:${academyProfile.phone.replace(/-/g, '')}`}>
                   <Button size="lg" variant="ghost" className="px-6">
                     <span className="material-symbols-outlined text-base">call</span>
@@ -192,6 +198,48 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </section>
+
+        <section className="bg-gradient-to-r from-primary/5 via-background to-primary/5 py-12">
+          <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-2 text-center">
+              <p className="text-sm font-semibold text-primary">SITE INFO</p>
+              <h3 className="text-2xl font-bold text-foreground">홈페이지와 제작자에 대해 더 알아보기</h3>
+              <p className="text-secondary">
+                사용된 기술 스택과 제작 배경, 학원의 첫 번째 수강생인 김현민의 이야기를 확인하세요.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
+              <Card className="border-border/60 bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-primary">
+                    <span className="material-symbols-outlined">emoji_objects</span>
+                    사이트 하이라이트
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-3 sm:grid-cols-2 text-sm text-muted-foreground">
+                  <div className="rounded-lg bg-muted p-3">
+                    <p className="font-semibold text-foreground">기술 스택</p>
+                    <p>Next.js · TypeScript · Tailwind CSS · Socket.io</p>
+                  </div>
+                  <div className="rounded-lg bg-muted p-3">
+                    <p className="font-semibold text-foreground">제작자</p>
+                    <p>2003년생, 대학교 2학년 김현민 (학원 첫 수강생)</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm text-foreground shadow-sm">
+                <p className="font-semibold text-primary">더 깊이 보기</p>
+                <p className="text-muted-foreground">
+                  사이트 정보 페이지에서 사용된 기술과 기능, 제작 스토리를 자세히 확인할 수 있습니다.
+                </p>
+                <Link href="/site-info" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground transition hover:shadow-md">
+                  <span className="material-symbols-outlined text-base">arrow_forward</span>
+                  사이트 정보로 이동
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
       </main>
