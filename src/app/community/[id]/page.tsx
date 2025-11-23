@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { studentSidebar } from "@/data/student";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,6 @@ const mockComments = [
 ];
 
 export default function CommunityPostPage() {
-  const params = useParams();
   const router = useRouter();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState(mockComments);

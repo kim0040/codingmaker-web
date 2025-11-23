@@ -9,278 +9,124 @@
 
 ---
 
-## 📋 프로젝트 개요
-
-**코딩메이커 아카데미 허브**는 임베디드/코딩, 웹툰/창작, 자격증 반으로 구성된 학원의 커리큘럼 관리 및 학생·학부모 소통을 위한 통합 플랫폼입니다.
+## 📋 프로젝트 소개
+- 임베디드/코딩, 웹툰/창작, 자격증 반으로 구성된 **코딩메이커 아카데미** 학습·소통 허브
+- 학생/학부모/관리자 티어에 따라 맞춤형 대시보드와 LMS, 커뮤니티, 키오스크를 제공
+- 프론트엔드는 완성된 상태이며, API 연동 및 실시간 기능을 위한 백엔드 연결을 기다리고 있습니다.
 
 ### 🎯 주요 기능
-
-- **🔐 티어별 권한 시스템** (Tier 1~5)
-- **📚 LMS 강의실** (Monaco Editor 통합)
-- **✅ 키오스크 출석 체크** (터치 최적화)
-- **👨‍👩‍👧 학부모 대시보드** (자녀 정보 실시간 조회)
-- **💬 커뮤니티 & 협업 공간**
-- **📊 데이터 분석 대시보드** (관리자 전용)
-- **🎨 다크/라이트 테마** (시스템 자동 연동)
-
----
-
-## 🚀 빠른 시작
-
-### 1. 프로젝트 클론
-
-```bash
-git clone <repository-url>
-cd codingmaker-web
-```
-
-### 2. 의존성 설치
-
-```bash
-npm install
-```
-
-### 3. 개발 서버 실행
-
-```bash
-npm run dev
-```
-
-브라우저에서 [http://localhost:3000](http://localhost:3000) 접속
+- 🔐 티어별 권한 시스템 (Tier 1~5)
+- 📚 LMS 강의실 (Monaco Editor 통합)
+- ✅ 터치 최적화 키오스크 출석 체크
+- 👨‍👩‍👧 학부모 대시보드 (실시간 자녀 정보 확인)
+- 💬 커뮤니티 & 프로젝트 협업 공간
+- 📊 관리자용 데이터 분석 대시보드
+- 🎨 시스템 테마 연동(라이트/다크)
 
 ---
 
 ## 🛠️ 기술 스택
-
-### Frontend
-- **Framework**: Next.js 14+ (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
-- **Theme**: next-themes
-- **Code Editor**: @monaco-editor/react
-- **Icons**: Material Symbols Outlined, Lucide React
-
-### Backend (예정)
-- **ORM**: Prisma
-- **Database**: MySQL (Production), SQLite (Development)
-- **Auth**: JWT
-- **Realtime**: Socket.io
-- **Security**: AES-256 (Random IV), bcrypt
+| 영역 | 사용 기술 |
+| --- | --- |
+| Framework | Next.js 14+ (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4, tailwind-merge, tailwindcss-animate |
+| Theme | next-themes |
+| Editor | @monaco-editor/react |
+| Icons | Material Symbols Outlined, Lucide React |
+| Realtime (예정) | Socket.io 클라이언트 |
+| Auth/보안 (예정) | JWT, AES-256, Prisma(MySQL/SQLite) |
 
 ---
 
-## 📂 프로젝트 구조
-
+## 📂 주요 폴더 구조
 ```
 codingmaker-web/
 ├── src/
 │   ├── app/                 # Next.js 페이지 (App Router)
-│   │   ├── page.tsx         # 홈페이지
-│   │   ├── auth/            # 로그인/회원가입
-│   │   ├── admin/           # 관리자 대시보드
-│   │   ├── student/         # 학생 대시보드
-│   │   ├── parent/          # 학부모 대시보드
-│   │   ├── lms/             # LMS 강의실
-│   │   ├── community/       # 커뮤니티
-│   │   ├── collab/          # 프로젝트 협업
-│   │   └── kiosk/           # 출석 키오스크
-│   ├── components/          # 재사용 컴포넌트
-│   │   ├── ui/              # shadcn/ui 스타일
-│   │   └── layout/          # Header, Footer, DashboardLayout
-│   ├── contexts/            # React Context (AuthContext)
+│   ├── components/          # UI 및 레이아웃 컴포넌트
+│   ├── contexts/            # AuthContext 등 전역 상태
 │   ├── data/                # Mock 데이터
-│   ├── hooks/               # Custom Hooks
-│   ├── lib/                 # 유틸리티 (api.ts, crypto.ts 예정)
-│   └── types/               # TypeScript 타입 정의
-├── public/                  # 정적 파일
-├── FINAL_HANDOVER_GUIDE.md  # 백엔드 인수인계 가이드 ⭐
-├── SECURITY_CHECKLIST.md    # 보안 체크리스트 ⭐
+│   ├── hooks/               # 커스텀 훅
+│   └── lib/                 # API/소켓 등 유틸
+├── public/                  # 정적 자산
+├── docs/                    # 가이드, 리포트, 레퍼런스 문서
 └── package.json
 ```
+자세한 문서 인덱스: [docs/README.md](./docs/README.md)
 
 ---
 
-## 🔐 보안 정책
+## 🧭 개발 환경 & 실행 가이드
+### 필수 요구사항
+- Node.js 18+ (LTS 권장), npm 9+ 또는 10+
+- Git, 브라우저(Chrome/Edge 최신)
 
-### 암호화 (AES-256 + Random IV)
-- 사용자 실명, 전화번호, 주소
-- 상담 기록, 채팅 메시지
-- **⚠️ 매번 새로운 Random IV 생성 필수**
+### OS별 Node.js 설치
+- **macOS**: `brew install nvm` → `nvm install --lts` → `nvm use --lts`
+- **Ubuntu**: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash` → `nvm install --lts`
+- **Windows**: [nvm-windows](https://github.com/coreybutler/nvm-windows/releases) 설치 후 PowerShell에서 `nvm install lts`, `nvm use lts`
 
-### 인증/권한
-- JWT 토큰 기반 인증
-- Tier 1~5 권한 시스템
-- 프론트엔드 UX 권한 체크 + 백엔드 최종 검증
-
-**자세한 내용**: [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md)
-
----
-
-## 📖 문서
-
-| 문서 | 설명 |
-|------|------|
-| [CMLMS 지시서.md](./CMLMS 지시서.md) | 코딩메이커 학원 통합 관리 시스템 최상위 요구사항/기획 명세 |
-| [코딩 메이커 정보.md](./코딩 메이커 정보.md) | 실제 학원 정보·과정·후기 정리 (도메인 데이터) |
-| [BACKEND_DESIGN_PLAN_1_OVERVIEW.md](./BACKEND_DESIGN_PLAN_1_OVERVIEW.md) | 백엔드 개요 및 아키텍처, 프로젝트 구조, 개발 Phase |
-| [BACKEND_DESIGN_PLAN_2_DATABASE.md](./BACKEND_DESIGN_PLAN_2_DATABASE.md) | 데이터베이스/Prisma 스키마 및 인덱스 설계 |
-| [BACKEND_DESIGN_PLAN_3_API.md](./BACKEND_DESIGN_PLAN_3_API.md) | 인증/출석/커뮤니티/채팅 등 API 명세 |
-| [BACKEND_DESIGN_PLAN_4_SECURITY.md](./BACKEND_DESIGN_PLAN_4_SECURITY.md) | AES-256, JWT, 권한, RateLimit 등 보안/미들웨어 설계 |
-| [FINAL_HANDOVER_GUIDE.md](./FINAL_HANDOVER_GUIDE.md) | 백엔드 개발자 인수인계 종합 가이드 (레퍼런스용) |
-| [FINAL_SUBMISSION_CHECKLIST.md](./FINAL_SUBMISSION_CHECKLIST.md) | 프론트엔드 완성도 및 백엔드 TODO 최종 체크리스트 |
-| [TIER_ACCESS_SPEC.md](./TIER_ACCESS_SPEC.md) | 티어별 접근 권한 및 페이지 접근 명세 |
-| [FRONTEND_TIER_IMPLEMENTATION.md](./FRONTEND_TIER_IMPLEMENTATION.md) | 프론트엔드 티어별 권한 구현 가이드 |
-| [ENV_SETUP.md](./ENV_SETUP.md) | 환경변수(.env) 설정 방법 |
-| [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) | 보안 강화 체크리스트 (배포 전 점검용) |
-
----
-
-## 🎨 디자인 시스템
-
-- **Primary Color**: #359EFF (신뢰감 있는 블루)
-- **Fonts**: Inter (영문), Noto Sans KR (한글)
-- **Icons**: Material Symbols Outlined
-- **Theme**: 라이트/다크 자동 전환
-
----
-
-## 📱 페이지 구성
-
-### 공개 페이지
-- `/` - 홈페이지 (학원 소개, 과정 안내)
-- `/auth` - 로그인/회원가입
-
-### 관리자 (Tier 1, 2)
-- `/admin` - 대시보드
-- `/admin/cms` - 콘텐츠 관리 (Tier 1만)
-- `/admin/analytics` - 데이터 분석
-- `/admin/classes` - 클래스 관리
-- `/admin/students` - 학생 관리
-- `/admin/settings` - 시스템 설정 (Tier 1만)
-
-### 학생 (Tier 3-A)
-- `/student` - 대시보드
-- `/student/classes` - 내 클래스
-- `/student/notifications` - 알림
-- `/lms` - LMS 강의실
-- `/community` - 커뮤니티
-- `/collab` - 프로젝트 협업
-
-### 학부모 (Tier 3-B)
-- `/parent` - 대시보드
-- `/parent/child` - 자녀 정보
-- `/parent/attendance` - 출결 현황
-- `/parent/curriculum` - 커리큘럼 진행도
-- `/parent/consult` - 상담 신청
-
-### 공용
-- `/kiosk` - 출석 키오스크 (전체 화면)
-
----
-
-## 🔌 백엔드 연결 가이드
-
-### 1. 환경변수 설정
-
+### 빠른 시작 (공통)
 ```bash
-# .env.local 파일 생성
-NEXT_PUBLIC_API_URL=http://localhost:3001/api
-CIPHER_KEY=your-32-byte-hex-key
-NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+git clone <repository-url>
+cd codingmaker-web
+npm install
+npm run dev
 ```
+- 개발 서버: http://localhost:3000
+- 환경 변수: [docs/guides/ENV_SETUP.md](./docs/guides/ENV_SETUP.md) 참고 (API URL, 암호화 키 등)
 
-### 2. API 클라이언트 사용
+### 주요 스크립트
+- `npm run dev` : 개발 서버 실행
+- `npm run lint` : ESLint 검사
+- `npm run build` : 프로덕션 빌드
+- `npm run start` : 빌드 결과 실행
 
-```typescript
-import { api, endpoints } from '@/lib/api';
-
-// 로그인
-const response = await api.post(endpoints.auth.login, {
-  username: 'user',
-  password: 'pass'
-});
-
-// 출석 체크
-await api.post(endpoints.attendance.checkin, { tag: '1234' }, token);
-```
-
-### 3. 주요 연결 포인트
-
-- **출석 체크**: `/src/app/kiosk/page.tsx` (37번 줄)
-- **로그인**: `/src/contexts/AuthContext.tsx` (login 함수)
-- **학원 정보**: `/src/hooks/useAcademyInfo.ts` (36-37번 줄)
-
-**자세한 내용**: [FINAL_HANDOVER_GUIDE.md](./FINAL_HANDOVER_GUIDE.md)
+### 테스트 & 품질 점검
+- 수동 동작 확인: 주요 페이지 라우팅, 테마 전환, 반응형, 키오스크 입력, 사이드바/버튼 인터랙션
+- 정적 분석: `npm run lint`
+- 통합/최종 테스트 절차는 [docs/guides/INTEGRATION_TEST_GUIDE.md](./docs/guides/INTEGRATION_TEST_GUIDE.md), [docs/guides/FINAL_TEST_GUIDE.md](./docs/guides/FINAL_TEST_GUIDE.md) 참고
 
 ---
 
-## 🧪 테스트
-
-### 수동 테스트 완료
-- ✅ 모든 페이지 접속
-- ✅ 테마 전환
-- ✅ 반응형 레이아웃
-- ✅ 버튼 클릭 동작
-- ✅ 사이드바 토글
-- ✅ 키오스크 입력
-
-### 브라우저 호환
-- Chrome, Safari, Firefox, Edge (최신 버전)
-
----
-
-## 📦 빌드 & 배포
-
-### 프로덕션 빌드
-
-```bash
-npm run build
-npm run start
-```
-
-### Vercel 배포 (권장)
-
+## 🚀 빌드 & 배포
+### Vercel (권장)
 ```bash
 npm install -g vercel
 vercel deploy --prod
 ```
+- Vercel에서 환경 변수(NEXT_PUBLIC_API_URL 등) 설정 후 배포
+
+### 커스텀 서버 배포 (Ubuntu 예시)
+```bash
+npm install
+npm run build
+npm install -g pm2
+pm2 start "npm run start" --name codingmaker-web
+pm2 save && pm2 startup
+```
+- 방화벽(ufw)에서 3000 포트 허용 또는 Nginx 리버스 프록시 설정
+
+### Windows 서버 배포
+```powershell
+npm install
+npm run build
+npm run start # 혹은 nssm/pm2-windows-service 등으로 서비스 등록
+```
+
+배포 전 체크리스트는 [docs/guides/DEPLOYMENT_CHECKLIST.md](./docs/guides/DEPLOYMENT_CHECKLIST.md)를, 보안/권한 검증은 [docs/archive/SECURITY_CHECKLIST.md](./docs/archive/SECURITY_CHECKLIST.md)와 [docs/reports/TIER_AND_ACADEMY_VERIFICATION.md](./docs/reports/TIER_AND_ACADEMY_VERIFICATION.md)를 참조하세요.
 
 ---
 
-## 🏫 학원 정보
-
-**코딩메이커학원**
-- 📍 주소: 전남 광양시 무등길 47 (중동 1549-9)
-- ☎️ 전화: 061-745-3355
-- 🌐 웹사이트: www.codingmaker.co.kr
-- 📝 블로그: https://blog.naver.com/kkj0201
-- 📷 인스타그램: @codingmaker_kj
-- ⏰ 운영시간: 평일 14:00~19:00, 토 14:00~17:00
-
----
-
-## 👥 기여
-
-### 프론트엔드
-- UI/UX 구현 완료
-- 백엔드 연결 대기 중
-
-### 백엔드 (개발 예정)
-- Prisma 스키마 정의
-- API 라우트 구현
-- 암호화 시스템
-- Socket.io 실시간 통신
-
----
-
-## 📄 라이선스
-
-Private - 코딩메이커학원 전용
+## 📄 문서 모음
+- 최신 문서 인덱스: [docs/README.md](./docs/README.md)
+- 환경 설정/배포/테스트 가이드: [docs/guides](./docs/guides)
+- 완료/검증 리포트: [docs/reports](./docs/reports)
+- 요구사항·도메인 자료: [docs/reference](./docs/reference)
+- 이전 설계안 및 기록: [docs/archive](./docs/archive/README.md)
 
 ---
 
 ## 📞 문의
-
-백엔드 통합 관련 문의: [FINAL_HANDOVER_GUIDE.md](./FINAL_HANDOVER_GUIDE.md) 참조
-
-**🎉 프론트엔드 개발 완료 - 백엔드 개발자에게 인계 준비 완료!**
+백엔드 통합 및 배포 관련 문의는 [docs/guides/ENV_SETUP.md](./docs/guides/ENV_SETUP.md)와 [docs/guides/DEPLOYMENT_CHECKLIST.md](./docs/guides/DEPLOYMENT_CHECKLIST.md)의 설정 값을 기준으로 진행해주세요.

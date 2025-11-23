@@ -125,13 +125,13 @@ export default function SiteInfoPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {techStack.frontend.map((tech, idx) => (
-                      <div 
-                        key={tech.name} 
-                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                        style={{ animationDelay: `${idx * 100}ms` }}
-                      >
+                    <div className="space-y-4">
+                      {techStack.frontend.map((tech, idx) => (
+                        <div
+                          key={tech.name}
+                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                          style={{ animationDelay: `${idx * 100}ms` }}
+                        >
                         <span className="material-symbols-outlined text-primary">{tech.icon}</span>
                         <div>
                           <h4 className="font-bold">{tech.name}</h4>
@@ -152,13 +152,13 @@ export default function SiteInfoPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {techStack.backend.map((tech, idx) => (
-                      <div 
-                        key={tech.name} 
-                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                        style={{ animationDelay: `${idx * 100}ms` }}
-                      >
+                    <div className="space-y-4">
+                      {techStack.backend.map((tech, idx) => (
+                        <div
+                          key={tech.name}
+                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                          style={{ animationDelay: `${idx * 100}ms` }}
+                        >
                         <span className="material-symbols-outlined text-primary">{tech.icon}</span>
                         <div>
                           <h4 className="font-bold">{tech.name}</h4>
@@ -205,7 +205,7 @@ export default function SiteInfoPage() {
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid md:grid-cols-3 gap-4">
-                {techStack.features.map((feature, idx) => (
+                {techStack.features.map((feature, _idx) => (
                   <div 
                     key={feature.name}
                     className="p-4 border rounded-lg hover:border-primary hover:shadow-md transition-all duration-300 cursor-pointer group"
@@ -269,7 +269,7 @@ export default function SiteInfoPage() {
               { label: "페이지", value: "23", icon: "web_asset" },
               { label: "컴포넌트", value: "50+", icon: "widgets" },
               { label: "완성도", value: "100%", icon: "check_circle" },
-            ].map((stat, idx) => (
+              ].map((stat, _idx) => (
               <Card key={stat.label} className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <span className="material-symbols-outlined text-5xl text-primary mb-2 block">

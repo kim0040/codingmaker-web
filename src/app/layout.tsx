@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_KR } from "next/font/google";
+import { Inter, Material_Symbols_Outlined, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -16,6 +16,13 @@ const notoSansKr = Noto_Sans_KR({
   display: "swap",
 });
 
+const materialSymbols = Material_Symbols_Outlined({
+  variable: "--font-material-symbols",
+  subsets: ["latin"],
+  weight: "400",
+  display: "block",
+});
+
 export const metadata: Metadata = {
   title: "코딩메이커 아카데미 허브",
   description: "미래를 코딩하다, 코딩메이커 아카데미",
@@ -23,26 +30,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="ko" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-        />
-      </head>
-      <body
-        className={`${inter.variable} ${notoSansKr.variable} antialiased font-sans bg-background text-foreground`}
-      >
-        <Providers>
-          {children}
-        </Providers>
-      </body>
+  }: Readonly<{
+    children: React.ReactNode;
+  }>) {
+    return (
+      <html lang="ko" suppressHydrationWarning>
+        <body
+          className={`${inter.variable} ${notoSansKr.variable} ${materialSymbols.variable} antialiased font-sans bg-background text-foreground`}
+        >
+          <Providers>
+            {children}
+          </Providers>
+        </body>
     </html>
   );
 }

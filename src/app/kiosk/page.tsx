@@ -102,11 +102,13 @@ export default function KioskPage() {
           <div className="space-y-4">
             <div className="rounded-3xl border-4 border-primary/20 bg-card p-8 shadow-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary mb-4">휴대폰 뒤 4자리</p>
-              <div className="min-h-[80px] flex items-center justify-center">
-                <p className="text-5xl sm:text-6xl font-bold tracking-[0.5em] text-foreground">
-                  {value || <span className="text-muted-foreground text-3xl">숫자 4자리를 입력하세요</span>}
-                </p>
-              </div>
+                <div className="min-h-[80px] flex items-center justify-center">
+                  <p className="text-5xl sm:text-6xl font-bold tracking-[0.5em] text-foreground">
+                    {displayValue || (
+                      <span className="text-muted-foreground text-3xl">숫자 4자리를 입력하세요</span>
+                    )}
+                  </p>
+                </div>
               {value && value.length === 4 && !error && (
                 <p className="mt-4 text-sm text-green-600 font-semibold flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-base">check_circle</span>
