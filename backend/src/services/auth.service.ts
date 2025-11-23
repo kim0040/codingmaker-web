@@ -4,7 +4,9 @@ import prisma from "../config/database.js";
 import { decrypt, encrypt } from "./crypto.service.js";
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "change-me-super-secret";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? "7d";
+const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? "7d") as NonNullable<
+  SignOptions["expiresIn"]
+>;
 
 export async function login(username: string, password: string) {
   const user = await prisma.user.findUnique({

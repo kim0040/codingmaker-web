@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   adminSidebar,
   adminStats as defaultStats,
@@ -29,56 +29,97 @@ const trendColor = {
   negative: "text-red-500",
 } as const;
 
+type DashboardAnalytics = {
+  totalStudents?: number;
+  newStudentsThisMonth?: number;
+  averageAttendance?: number;
+  attendanceTrend?: string;
+  activeCourses?: number;
+  communityPosts?: number;
+  newPostsThisWeek?: number;
+};
+
+type DashboardResponse = {
+  success: boolean;
+  data?: DashboardAnalytics;
+};
+
+type CommunityPost = {
+  id: string;
+  title: string;
+  createdAt: string;
+  author?: {
+    name?: string | null;
+  };
+};
+
+type CommunityResponse = {
+  success: boolean;
+  data?: {
+    posts: CommunityPost[];
+  };
+};
+
 export default function AdminDashboardPage() {
   const { user, token, isLoading: authLoading } = useAuth();
   const router = useRouter();
-  const [dashboardData, setDashboardData] = useState<any>(null);
-  const [communityPosts, setCommunityPosts] = useState<any[]>([]);
+  const [dashboardData, setDashboardData] = useState<DashboardAnalytics | null>(null);
+  const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchDashboardData = useCallback(async ({ showSpinner = false } = {}) => {
+    if (!token) return;
+    try {
+      if (showSpinner) {
+        setIsLoading(true);
+      }
+      setIsRefreshing(true);
+      const response = await api.get<DashboardResponse>(endpoints.analytics.dashboard, token);
+      if (response.success && response.data) {
+        setDashboardData(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    } finally {
+      if (showSpinner) {
+        setIsLoading(false);
+      }
+      setIsRefreshing(false);
+    }
+  }, [token]);
+
+  const fetchCommunityPosts = useCallback(async () => {
+    if (!token) return;
+    try {
+      const response = await api.get<CommunityResponse>(endpoints.community.posts, token);
+      if (response.success && response.data?.posts) {
+        setCommunityPosts(response.data.posts.slice(0, 5));
+      }
+    } catch (error) {
+      console.error("Failed to fetch community posts:", error);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!authLoading && !user) {
+      setIsLoading(false);
       router.push("/auth");
       return;
     }
-    
+
     if (user && user.tier > 2) {
+      setIsLoading(false);
       alert("관리자 권한이 필요합니다.");
       router.push("/");
       return;
     }
 
     if (user && token) {
-      fetchDashboardData();
+      fetchDashboardData({ showSpinner: true });
       fetchCommunityPosts();
     }
-  }, [user, token, authLoading]);
-
-  const fetchDashboardData = async () => {
-    if (!token) return;
-    try {
-      const response: any = await api.get(endpoints.analytics.dashboard, token);
-      if (response.success) {
-        setDashboardData(response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch dashboard data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchCommunityPosts = async () => {
-    if (!token) return;
-    try {
-      const response: any = await api.get(endpoints.community.posts, token);
-      if (response.success && response.data && response.data.posts) {
-        setCommunityPosts(response.data.posts.slice(0, 5)); // 최근 5개만
-      }
-    } catch (error) {
-      console.error("Failed to fetch community posts:", error);
-    }
-  };
+  }, [authLoading, fetchCommunityPosts, fetchDashboardData, router, token, user]);
 
   const adminStats = dashboardData ? [
     {
@@ -133,25 +174,24 @@ export default function AdminDashboardPage() {
   }
   const headerActions = (
     <>
-      <button
-        className="rounded-full p-2.5 text-muted-foreground hover:bg-muted"
-        onClick={() => alert('검색 기능은 백엔드 연결 후 사용 가능합니다.')}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => fetchDashboardData()}
+        className="relative"
       >
-        <span className="material-symbols-outlined">search</span>
-      </button>
-      <button
-        className="rounded-full p-2.5 text-muted-foreground hover:bg-muted"
-        onClick={() => alert('새 알림이 없습니다.')}
+        <span className="material-symbols-outlined">refresh</span>
+        {isRefreshing && <span className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full bg-primary" />}
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => router.push("/admin/students")}
+        aria-label="학생 목록으로 이동"
       >
-        <span className="material-symbols-outlined">notifications</span>
-      </button>
-      <button
-        className="rounded-full p-2.5 text-muted-foreground hover:bg-muted"
-        onClick={() => alert('메일 기능은 백엔드 연결 후 사용 가능합니다.')}
-      >
-        <span className="material-symbols-outlined">mail</span>
-      </button>
-      <Button className="gap-1" onClick={() => alert('학생 추가 기능은 백엔드 연결 후 사용 가능합니다.')}>
+        <span className="material-symbols-outlined">groups</span>
+      </Button>
+      <Button className="gap-1" onClick={() => router.push("/admin/students?mode=create")}>
         <span className="material-symbols-outlined text-base">add</span>
         <span className="hidden sm:inline">학생 추가</span>
       </Button>
