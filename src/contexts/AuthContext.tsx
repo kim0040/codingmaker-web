@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { api, endpoints } from '@/lib/api';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { APIError, api, endpoints } from '@/lib/api';
+import type { ApiResponse, AuthPayload } from '@/types/api';
 
 /**
  * 사용자 권한 체계 (Tier System)
@@ -44,20 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // 초기 로드 시 localStorage에서 토큰 복원
-  useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    if (storedToken) {
-      setToken(storedToken);
-      // 토큰 유효성 검사 및 사용자 정보 가져오기
-      fetchUserProfile(storedToken);
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const fetchUserProfile = async (authToken: string) => {
+  const fetchUserProfile = useCallback(async (authToken: string) => {
     try {
-      const response: any = await api.get(endpoints.auth.me, authToken);
+      const response = await api.get<ApiResponse<User>>(endpoints.auth.me, authToken);
       if (response.success && response.data) {
         setUser(response.data);
       } else {
@@ -69,24 +59,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('auth_token');
+    if (storedToken) {
+      setToken(storedToken);
+      // 토큰 유효성 검사 및 사용자 정보 가져오기
+      fetchUserProfile(storedToken);
+    } else {
+      setIsLoading(false);
+    }
+  }, [fetchUserProfile]);
 
   const login = async (username: string, password: string) => {
     try {
-      const response: any = await api.post(endpoints.auth.login, { username, password });
-      
+      const response = await api.post<ApiResponse<AuthPayload>>(endpoints.auth.login, { username, password });
+
       if (response.success && response.data) {
         const { token: authToken, user: userData } = response.data;
-        
+
         setToken(authToken);
         setUser(userData);
         localStorage.setItem('auth_token', authToken);
       } else {
-        throw new Error('로그인에 실패했습니다.');
+        throw new APIError(401, 'Unauthorized', '아이디 또는 비밀번호가 올바르지 않습니다.');
       }
     } catch (error) {
       console.error('Login failed:', error);
-      throw error;
+      if (error instanceof APIError) {
+        if (error.status === 400 || error.status === 401) {
+          throw new APIError(error.status, error.statusText, '아이디 또는 비밀번호가 올바르지 않습니다.');
+        }
+        throw error;
+      }
+      throw new Error('서버와의 통신 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 

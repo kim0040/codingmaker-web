@@ -9,12 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
+import type { ApiResponse } from "@/types/api";
+
+interface CreateUserPayload {
+  username: string;
+  password: string;
+  name: string;
+  phone: string;
+  tag: string;
+  role: string;
+  tier: number;
+}
 
 export default function AddStudentPage() {
   const { user, token } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CreateUserPayload & { passwordConfirm: string }>({
     username: "",
     password: "",
     passwordConfirm: "",
@@ -49,14 +60,15 @@ export default function AddStudentPage() {
     setIsLoading(true);
     try {
       const { passwordConfirm, ...submitData } = formData;
-      const response: any = await api.post("/users", submitData, token);
+      const response = await api.post<ApiResponse<unknown>>("/users", submitData, token);
       
       if (response.success) {
         alert("학생이 추가되었습니다.");
         router.push("/admin/students");
       }
-    } catch (error: any) {
-      alert(error.message || "학생 추가 중 오류가 발생했습니다.");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "학생 추가 중 오류가 발생했습니다.";
+      alert(message);
     } finally {
       setIsLoading(false);
     }

@@ -13,7 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { api, endpoints } from "@/lib/api";
+import { APIError, api, endpoints } from "@/lib/api";
+import type { ApiResponse } from "@/types/api";
 
 const tabs = [
   { value: "login", label: "로그인" },
@@ -103,7 +104,7 @@ export default function AuthPage() {
                       setIsLoading(false);
                       return;
                     }
-                    const response: any = await api.post(endpoints.auth.register, {
+                    const response = await api.post<ApiResponse<{ id: string }>>(endpoints.auth.register, {
                       username,
                       password,
                       name,
@@ -118,8 +119,14 @@ export default function AuthPage() {
                       setError("회원가입이 완료되었습니다. 로그인해주세요.");
                     }
                   }
-                } catch (err: any) {
-                  setError(err?.message || "오류가 발생했습니다.");
+                } catch (err: unknown) {
+                  if (err instanceof APIError) {
+                    setError(err.message);
+                  } else if (err instanceof Error) {
+                    setError(err.message);
+                  } else {
+                    setError("서버와의 통신 중 오류가 발생했습니다.");
+                  }
                 } finally {
                   setIsLoading(false);
                 }

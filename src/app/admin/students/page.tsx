@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { adminSidebar } from "@/data/admin";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,14 +9,34 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import type { ApiResponse, UserSummary } from "@/types/api";
 
 export default function AdminStudentsPage() {
   const { user, token, isLoading: authLoading } = useAuth();
   const router = useRouter();
-  const [students, setStudents] = useState<any[]>([]);
+  const [students, setStudents] = useState<UserSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
+
+  const fetchStudents = useCallback(async () => {
+    if (!token) return;
+    try {
+      const params = new URLSearchParams();
+      if (filterRole !== "all") params.append("role", filterRole);
+      if (searchTerm) params.append("search", searchTerm);
+      
+      const url = `/users${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await api.get<ApiResponse<UserSummary[]>>(url, token);
+      if (response.success) {
+        setStudents(response.data ?? []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch students:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filterRole, searchTerm, token]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -31,26 +51,7 @@ export default function AdminStudentsPage() {
     if (user && token) {
       fetchStudents();
     }
-  }, [user, token, authLoading]);
-
-  const fetchStudents = async () => {
-    if (!token) return;
-    try {
-      const params = new URLSearchParams();
-      if (filterRole !== "all") params.append("role", filterRole);
-      if (searchTerm) params.append("search", searchTerm);
-      
-      const url = `/users${params.toString() ? `?${params.toString()}` : ''}`;
-      const response: any = await api.get(url, token);
-      if (response.success) {
-        setStudents(response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch students:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [user, token, authLoading, fetchStudents, router]);
 
   const handleDeleteStudent = async (studentId: string, studentName: string) => {
     if (!token || user?.tier !== 1) {
@@ -60,13 +61,14 @@ export default function AdminStudentsPage() {
     if (!confirm(`${studentName} 학생을 삭제하시겠습니까?`)) return;
     
     try {
-      const response: any = await api.delete(`/users/${studentId}`, token);
+      const response = await api.delete<ApiResponse<unknown>>(`/users/${studentId}`, token);
       if (response.success) {
         alert("학생이 삭제되었습니다.");
         fetchStudents();
       }
-    } catch (error: any) {
-      alert(error.message || "학생 삭제 중 오류가 발생했습니다.");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "학생 삭제 중 오류가 발생했습니다.";
+      alert(message);
     }
   };
 
@@ -77,7 +79,7 @@ export default function AdminStudentsPage() {
       }
     }, 500);
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, filterRole]);
+  }, [searchTerm, filterRole, fetchStudents, token, user]);
 
   if (authLoading || isLoading) {
     return (

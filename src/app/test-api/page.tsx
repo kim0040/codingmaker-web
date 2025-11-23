@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TestApiPage() {
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
 
   const testConnection = async () => {
@@ -36,11 +36,13 @@ export default function TestApiPage() {
         data: data,
         apiUrl: apiUrl
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error:', error);
+      const message = error instanceof Error ? error.message : '예상치 못한 오류가 발생했습니다.';
+      const stack = error instanceof Error ? error.stack : undefined;
       setResult({
-        error: error.message,
-        stack: error.stack
+        error: message,
+        stack,
       });
     } finally {
       setLoading(false);

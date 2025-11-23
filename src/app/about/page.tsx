@@ -1,30 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { api, endpoints } from "@/lib/api";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import type { AcademyInfo, ApiResponse } from "@/types/api";
 
 export default function AboutPage() {
-  const [academyInfo, setAcademyInfo] = useState<any>(null);
+  const [academyInfo, setAcademyInfo] = useState<AcademyInfo | null>(null);
 
-  useEffect(() => {
-    fetchAcademyInfo();
-  }, []);
-
-  const fetchAcademyInfo = async () => {
+  const fetchAcademyInfo = useCallback(async () => {
     try {
-      const response: any = await api.get(endpoints.academy.info);
-      if (response.success) {
+      const response = await api.get<ApiResponse<AcademyInfo>>(endpoints.academy.info);
+      if (response.success && response.data) {
         setAcademyInfo(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch academy info:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAcademyInfo();
+  }, [fetchAcademyInfo]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">

@@ -58,7 +58,7 @@ class SocketService {
   }
 
   // 새 메시지 수신
-  onNewMessage(callback: (message: any) => void) {
+  onNewMessage(callback: (message: { id: string; content: string; authorId: string; roomId: string; createdAt: string }) => void) {
     this.socket?.on('chat:new-message', callback);
   }
 

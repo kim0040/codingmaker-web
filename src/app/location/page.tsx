@@ -1,29 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { api, endpoints } from "@/lib/api";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import type { AcademyInfo, ApiResponse } from "@/types/api";
 
 export default function LocationPage() {
-  const [academyInfo, setAcademyInfo] = useState<any>(null);
+  const [academyInfo, setAcademyInfo] = useState<AcademyInfo | null>(null);
 
-  useEffect(() => {
-    fetchAcademyInfo();
-  }, []);
-
-  const fetchAcademyInfo = async () => {
+  const fetchAcademyInfo = useCallback(async () => {
     try {
-      const response: any = await api.get(endpoints.academy.info);
-      if (response.success) {
+      const response = await api.get<ApiResponse<AcademyInfo>>(endpoints.academy.info);
+      if (response.success && response.data) {
         setAcademyInfo(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch academy info:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAcademyInfo();
+  }, [fetchAcademyInfo]);
 
   const address = academyInfo?.address || "전남 광양시 무등길 47 (중동 1549-9)";
   const phone = academyInfo?.phone || "061-745-3355";
