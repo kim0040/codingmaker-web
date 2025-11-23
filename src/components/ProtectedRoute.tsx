@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * 페이지 접근 권한 체크 컴포넌트
@@ -18,42 +19,28 @@ interface ProtectedRouteProps {
   redirectTo?: string; // 권한 없을 시 리다이렉트 경로
 }
 
-export function ProtectedRoute({ 
-  children, 
+export function ProtectedRoute({
+  children,
   allowedTiers,
-  redirectTo = '/auth' 
+  redirectTo = '/auth'
 }: ProtectedRouteProps) {
   const router = useRouter();
-  
-  // TODO: 백엔드 연결 시 실제 사용자 정보로 교체
-  // const { user, isLoading } = useAuth();
-  
-  // 임시 Mock 데이터 (개발용)
-  const mockUser = {
-    id: '1',
-    tier: 1, // 테스트용: 1=관리자, 2=강사, 3=학생, 등
-    role: 'ADMIN' as const,
-  };
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    // 로딩 중일 때는 체크하지 않음
-    // if (isLoading) return;
+    if (isLoading) return;
 
-    // 로그인 안 되어 있으면 로그인 페이지로
-    if (!mockUser) {
+    if (!user) {
       router.push(redirectTo);
       return;
     }
 
-    // 권한이 없으면 홈으로 리다이렉트
-    if (!allowedTiers.includes(mockUser.tier)) {
+    if (!allowedTiers.includes(user.tier)) {
       router.push('/');
-      return;
     }
-  }, [mockUser, allowedTiers, redirectTo, router]);
+  }, [user, isLoading, allowedTiers, redirectTo, router]);
 
-  // 권한 확인 전에는 로딩 표시
-  if (!mockUser) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -64,14 +51,24 @@ export function ProtectedRoute({
     );
   }
 
-  // 권한 없으면 접근 거부 메시지
-  if (!allowedTiers.includes(mockUser.tier)) {
+  if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <span className="material-symbols-outlined text-6xl text-muted-foreground">block</span>
-          <h1 className="mt-4 text-2xl font-bold">접근 권한이 없습니다</h1>
-          <p className="mt-2 text-muted-foreground">이 페이지에 접근할 수 있는 권한이 없습니다.</p>
+          <span className="material-symbols-outlined text-6xl text-muted-foreground">login</span>
+          <h1 className="mt-4 text-2xl font-bold">로그인이 필요합니다</h1>
+          <p className="mt-2 text-muted-foreground">페이지에 접근하려면 먼저 로그인해주세요.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!allowedTiers.includes(user.tier)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+          <p className="mt-4 text-muted-foreground">권한 확인 중...</p>
         </div>
       </div>
     );
@@ -88,17 +85,16 @@ export function ProtectedRoute({
  *   <AdminOnlyButton />
  * </ShowForTiers>
  */
-export function ShowForTiers({ 
-  children, 
-  tiers 
-}: { 
-  children: React.ReactNode; 
+export function ShowForTiers({
+  children,
+  tiers
+}: {
+  children: React.ReactNode;
   tiers: number[];
 }) {
-  // TODO: 백엔드 연결 시 실제 사용자 정보로 교체
-  const mockUserTier = 1; // 테스트용
+  const { user } = useAuth();
 
-  if (!tiers.includes(mockUserTier)) {
+  if (!user || !tiers.includes(user.tier)) {
     return null;
   }
 
@@ -113,17 +109,16 @@ export function ShowForTiers({
  *   <StaffOnlyFeature />
  * </ShowForRoles>
  */
-export function ShowForRoles({ 
-  children, 
-  roles 
-}: { 
-  children: React.ReactNode; 
+export function ShowForRoles({
+  children,
+  roles
+}: {
+  children: React.ReactNode;
   roles: ('ADMIN' | 'TEACHER' | 'STUDENT' | 'PARENT' | 'ALUMNI' | 'GUEST')[];
 }) {
-  // TODO: 백엔드 연결 시 실제 사용자 정보로 교체
-  const mockUserRole = 'ADMIN'; // 테스트용
+  const { user } = useAuth();
 
-  if (!roles.includes(mockUserRole)) {
+  if (!user || !roles.includes(user.role)) {
     return null;
   }
 

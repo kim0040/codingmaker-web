@@ -3,6 +3,7 @@ import prisma from "../config/database.js";
 import { AuthRequest } from "../types/express.js";
 import { decrypt, encrypt } from "../services/crypto.service.js";
 import bcrypt from "bcrypt";
+import { Prisma } from "@prisma/client";
 
 export async function getUserProfileHandler(req: AuthRequest, res: Response) {
   try {
@@ -90,7 +91,7 @@ export async function getUsersListHandler(req: AuthRequest, res: Response) {
     const { role, search, page = "1", limit = "50" } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
     
     if (role && typeof role === "string") {
       where.role = role;
@@ -103,28 +104,27 @@ export async function getUsersListHandler(req: AuthRequest, res: Response) {
       ];
     }
 
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        where,
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          phone: true,
-          tag: true,
-          tier: true,
-          role: true,
-          createdAt: true,
-        },
-        skip,
-        take: Number(limit),
-        orderBy: { createdAt: "desc" },
-      }),
-      prisma.user.count({ where }),
-    ]);
+    const users = await prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        phone: true,
+        tag: true,
+        tier: true,
+        role: true,
+        createdAt: true,
+      },
+      skip,
+      take: Number(limit),
+      orderBy: { createdAt: "desc" },
+    });
+
+    const total = await prisma.user.count({ where });
 
     // 암호화된 필드 복호화
-    const decryptedUsers = users.map((user) => ({
+    const decryptedUsers = users.map((user: (typeof users)[number]) => ({
       id: user.id,
       username: user.username,
       name: decrypt(user.name) ?? "알 수 없음",
@@ -199,7 +199,7 @@ export async function createUserHandler(req: AuthRequest, res: Response) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 개인정보 암호화
-    const encryptedName = encrypt(name);
+    const encryptedName = encrypt(name) ?? "";
     const encryptedPhone = phone ? encrypt(phone) : null;
 
     const newUser = await prisma.user.create({
