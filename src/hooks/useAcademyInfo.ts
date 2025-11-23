@@ -1,6 +1,12 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { api, endpoints } from '@/lib/api';
+
+interface AcademyInfoResponse {
+  success?: boolean;
+  data?: Partial<AcademyInfo> | null;
+}
 
 /**
  * 학원 정보 Hook
@@ -37,24 +43,37 @@ export function useAcademyInfo() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isActive = true;
+
     async function fetchAcademyInfo() {
+      setIsLoading(true);
+
       try {
-        // TODO: 백엔드 연결 시 주석 해제
-        // const response = await api.get<AcademyInfo>(endpoints.academy.info);
-        // setInfo(response);
-        
-        // 임시로 기본값 사용
-        setInfo(DEFAULT_INFO);
-        setIsLoading(false);
+        const response = await api.get<AcademyInfoResponse>(endpoints.academy.info);
+
+        if (!isActive) return;
+
+        if (response && typeof response === 'object' && 'data' in response && response.data) {
+          setInfo({ ...DEFAULT_INFO, ...response.data });
+        } else {
+          setInfo(DEFAULT_INFO);
+        }
       } catch (err) {
         console.error('Failed to fetch academy info:', err);
         setError('학원 정보를 불러오는데 실패했습니다.');
-        setInfo(DEFAULT_INFO); // fallback
-        setIsLoading(false);
+        setInfo(DEFAULT_INFO);
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchAcademyInfo();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   return { info, isLoading, error };
