@@ -5,6 +5,57 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
+export interface DashboardOverview {
+  todayAttendance: number;
+  totalStudents: number;
+  todayPosts: number;
+  activeCourses: number;
+  attendanceRate: string;
+}
+
+export interface WeeklyAttendancePoint {
+  date: string;
+  count: number;
+}
+
+export interface DashboardStats {
+  overview: DashboardOverview;
+  weeklyAttendance: WeeklyAttendancePoint[];
+}
+
+export interface AttendanceDailyStat {
+  date: string;
+  total: number;
+  attended: number;
+  late: number;
+  absent: number;
+}
+
+export interface AttendanceStudentStat {
+  id: string;
+  name: string;
+  totalDays: number;
+  attendedDays: number;
+  rate: string;
+}
+
+export interface AttendanceAnalytics {
+  dailyStats: AttendanceDailyStat[];
+  totalStats: { status: string; _count: { status: number } }[];
+  studentStats: AttendanceStudentStat[];
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  category: string;
+  description?: string | null;
+  instructor?: string | null;
+  schedule?: string | null;
+  isActive: boolean;
+  enrolledCount: number;
+}
+
 export interface AcademyInfo {
   address?: string;
   phone?: string;
@@ -34,6 +85,26 @@ export interface AuthPayload {
     tier: number;
     role: string;
     parentId?: string;
+  };
+}
+
+export interface AttendanceRecord {
+  id: string;
+  userId: string;
+  status: string;
+  date: string;
+  note?: string | null;
+}
+
+export interface AttendanceSummary {
+  userId: string;
+  month: string;
+  records: AttendanceRecord[];
+  stats: {
+    attended: number;
+    late: number;
+    absent: number;
+    rate: string;
   };
 }
 

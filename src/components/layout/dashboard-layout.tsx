@@ -115,13 +115,15 @@ export function DashboardLayout({
         </nav>
       </div>
       <div className="flex flex-col gap-2 pt-6">
-        <Button className="w-full" onClick={() => alert('공지 등록 기능은 백엔드 연결 후 사용 가능합니다.')}>새 공지 등록</Button>
+        {user?.tier && user.tier <= 2 && (
+          <Button className="w-full" onClick={() => router.push('/admin/cms')}>새 공지 등록</Button>
+        )}
         <div className="flex flex-col gap-1">
-          <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted" onClick={() => alert('도움말 페이지는 추후 추가될 예정입니다.')}>
+          <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted" onClick={() => router.push('/contact')}>
             <span className="material-symbols-outlined text-base">help_outline</span>
             도움말
           </button>
-          <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted" onClick={() => { 
+          <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted" onClick={() => {
             if (confirm('로그아웃 하시겠습니까?')) {
               logout();
               router.push('/');
@@ -192,18 +194,18 @@ export function DashboardLayout({
                       <span className="size-8 rounded-full bg-primary/10"></span>
                       <span className="hidden text-sm font-semibold lg:block">{userName}</span>
                     </summary>
-                    <div className="absolute right-0 mt-2 w-40 rounded-lg border border-border bg-card p-2 text-sm shadow-lg">
-                      <button 
-                        onClick={() => alert('프로필 페이지는 백엔드 연결 후 사용 가능합니다.')}
-                        className="block w-full rounded-md px-3 py-1 text-left hover:bg-muted"
-                      >
-                        프로필
-                      </button>
-                      <button 
-                        onClick={() => alert('설정 페이지는 백엔드 연결 후 사용 가능합니다.')}
-                        className="block w-full rounded-md px-3 py-1 text-left hover:bg-muted"
-                      >
-                        설정
+                  <div className="absolute right-0 mt-2 w-40 rounded-lg border border-border bg-card p-2 text-sm shadow-lg">
+                    <button
+                      onClick={() => router.push(user?.tier && user.tier <= 2 ? '/admin' : '/')}
+                      className="block w-full rounded-md px-3 py-1 text-left hover:bg-muted"
+                    >
+                      프로필
+                    </button>
+                    <button
+                      onClick={() => router.push(user?.tier && user.tier <= 2 ? '/admin/settings' : '/contact')}
+                      className="block w-full rounded-md px-3 py-1 text-left hover:bg-muted"
+                    >
+                      설정
                       </button>
                       <button 
                         onClick={() => { 
