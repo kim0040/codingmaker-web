@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
-import { api, endpoints } from "@/lib/api";
+import { api } from "@/lib/api";
 import { socketService } from "@/lib/socket";
 
 interface Message {
@@ -30,6 +30,25 @@ export function ChatUI({ roomId }: ChatUIProps) {
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const fetchMessages = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      const response: any = await api.get(
+        `/chat/rooms/${roomId}/messages?page=1&limit=50`,
+        token
+      );
+      if (response.success && response.data?.messages) {
+        setMessages(response.data.messages);
+        scrollToBottom();
+      }
+    } catch (error) {
+      console.error("Failed to fetch messages:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token, roomId]);
+
   useEffect(() => {
     if (!token || !roomId) return;
 
@@ -50,26 +69,7 @@ export function ChatUI({ roomId }: ChatUIProps) {
       socketService.leaveRoom(roomId);
       socketService.off("chat:new-message");
     };
-  }, [token, roomId]);
-
-  const fetchMessages = async () => {
-    if (!token) return;
-
-    try {
-      const response: any = await api.get(
-        `/chat/rooms/${roomId}/messages?page=1&limit=50`,
-        token
-      );
-      if (response.success && response.data?.messages) {
-        setMessages(response.data.messages);
-        scrollToBottom();
-      }
-    } catch (error) {
-      console.error("Failed to fetch messages:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [token, roomId, fetchMessages]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !token || isSending) return;

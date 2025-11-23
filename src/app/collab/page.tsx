@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  workspaceMeta,
-  workspaceNav,
-  workspaceSidebar,
-  workspaceTeam,
-  workspaceMessages,
-} from "@/data/workspace";
+import { workspaceMeta, workspaceSidebar, workspaceTeam, workspaceMessages } from "@/data/workspace";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { studentSidebar } from "@/data/student";
 

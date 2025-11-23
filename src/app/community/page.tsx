@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { communityFilters } from "@/data/community";
 import { Button } from "@/components/ui/button";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
@@ -15,11 +15,7 @@ export default function CommunityPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchPosts();
-  }, [token]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     if (!token) {
       setIsLoading(false);
       return;
@@ -39,7 +35,11 @@ export default function CommunityPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
   return (
     <DashboardLayout
       userName={user?.name || "사용자"}

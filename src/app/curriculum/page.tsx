@@ -125,7 +125,7 @@ export default function CurriculumPage() {
 
         {/* Courses */}
         <div className="space-y-8 max-w-6xl mx-auto">
-          {courses.map((course, index) => (
+            {courses.map((course, _index) => (
             <Card key={course.id} className={`border-2 ${getColorClasses(course.color)}`}>
               <CardHeader className={`bg-gradient-to-r ${getColorClasses(course.color)} text-white`}>
                 <div className="flex justify-between items-start">

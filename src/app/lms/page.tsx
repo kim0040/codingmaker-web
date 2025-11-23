@@ -51,43 +51,43 @@ export default function LmsPage() {
     return () => {
       isMountedRef.current = false;
 
-      if (editorRef.current) {
-        try {
-          editorRef.current.dispose?.();
-        } catch (e) {
-          // 정리 중 에러 무시
+        if (editorRef.current) {
+          try {
+            editorRef.current.dispose?.();
+          } catch {
+            // 정리 중 에러 무시
+          }
         }
+      };
+    }, []);
+
+    const handleEditorWillMount = (monaco: any) => {
+      if (!isMountedRef.current) return;
+      try {
+        monaco.editor.defineTheme('custom-dark', {
+          base: 'vs-dark',
+          inherit: true,
+          rules: [],
+          colors: {}
+        });
+      } catch {
+        // 에러 무시
       }
     };
-  }, []);
 
-  const handleEditorWillMount = (monaco: any) => {
-    if (!isMountedRef.current) return;
-    try {
-      monaco.editor.defineTheme('custom-dark', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [],
-        colors: {}
-      });
-    } catch (e) {
-      // 에러 무시
-    }
-  };
-
-  const handleEditorDidMount = (editor: any, monaco: any) => {
-    if (!isMountedRef.current) return;
-    editorRef.current = editor;
-    try {
-      editor.updateOptions({ 
-        fontSize: 14,
-        lineHeight: 21,
-        padding: { top: 10, bottom: 10 }
-      });
-    } catch (error) {
-      // 에디터 초기화 중 취소된 경우 무시
-    }
-  };
+    const handleEditorDidMount = (editor: any, _monaco: any) => {
+      if (!isMountedRef.current) return;
+      editorRef.current = editor;
+      try {
+        editor.updateOptions({
+          fontSize: 14,
+          lineHeight: 21,
+          padding: { top: 10, bottom: 10 }
+        });
+      } catch {
+        // 에디터 초기화 중 취소된 경우 무시
+      }
+    };
 
   const handleSave = () => {
     console.log('임시 저장된 코드:', studentCode);
@@ -123,8 +123,8 @@ export default function LmsPage() {
           <h2 className="text-xl font-bold text-foreground">커리큘럼</h2>
           <p className="text-sm text-muted-foreground">주차별 학습 진행 상태</p>
           <div className="mt-4 space-y-4">
-            {curriculumList.map((step, index) => (
-              <div key={step.title} className="flex items-start gap-3">
+              {curriculumList.map((step) => (
+                <div key={step.title} className="flex items-start gap-3">
                 <div
                   className={`flex size-8 items-center justify-center rounded-full border text-sm font-semibold ${
                     step.status === "completed"

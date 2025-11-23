@@ -59,7 +59,7 @@ export default function AddStudentPage() {
 
     setIsLoading(true);
     try {
-      const { passwordConfirm, ...submitData } = formData;
+      const { passwordConfirm: _passwordConfirm, ...submitData } = formData;
       const response = await api.post<ApiResponse<unknown>>("/users", submitData, token);
       
       if (response.success) {
