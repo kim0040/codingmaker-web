@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,12 @@ import { adminSidebar } from "@/data/admin";
 import { useAuth } from "@/contexts/AuthContext";
 import { api, endpoints } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import type { AcademyInfo, ApiResponse } from "@/types/api";
+
+type AcademyFormState = Required<Pick<AcademyInfo, "name" | "phone" | "address" | "hours">> & {
+  blog: string;
+  instagram: string;
+};
 
 export default function AcademyInfoPage() {
   const { user, token } = useAuth();
@@ -17,7 +23,7 @@ export default function AcademyInfoPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AcademyFormState>({
     name: "",
     phone: "",
     address: "",
@@ -26,24 +32,11 @@ export default function AcademyInfoPage() {
     instagram: "",
   });
 
-  useEffect(() => {
-    // Tier 1 권한 체크
-    if (user && user.tier !== 1) {
-      alert("접근 권한이 없습니다.");
-      router.push("/");
-      return;
-    }
-    
-    if (user && token) {
-      fetchAcademyInfo();
-    }
-  }, [user, token]);
-
-  const fetchAcademyInfo = async () => {
+  const fetchAcademyInfo = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response: any = await api.get(endpoints.academy.info);
-      if (response.success) {
+      const response = await api.get<ApiResponse<AcademyInfo>>(endpoints.academy.info);
+      if (response.success && response.data) {
         setFormData({
           name: response.data.name || "",
           phone: response.data.phone || "",
@@ -59,7 +52,20 @@ export default function AcademyInfoPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Tier 1 권한 체크
+    if (user && user.tier !== 1) {
+      alert("접근 권한이 없습니다.");
+      router.push("/");
+      return;
+    }
+
+    if (user && token) {
+      fetchAcademyInfo();
+    }
+  }, [user, token, fetchAcademyInfo, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +79,7 @@ export default function AcademyInfoPage() {
     setMessage("");
 
     try {
-      const response: any = await api.put(
+      const response = await api.put<ApiResponse<unknown>>( 
         endpoints.academy.update,
         formData,
         token
@@ -83,9 +89,10 @@ export default function AcademyInfoPage() {
         setMessage("✓ 학원 정보가 수정되었습니다.");
         setTimeout(() => setMessage(""), 3000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to update academy info:", error);
-      setMessage(error?.message || "수정에 실패했습니다.");
+      const message = error instanceof Error ? error.message : "수정에 실패했습니다.";
+      setMessage(message);
     } finally {
       setIsSaving(false);
     }

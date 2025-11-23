@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { api, endpoints } from '@/lib/api';
+import type { ApiResponse, AuthPayload } from '@/types/api';
 
 /**
  * 사용자 권한 체계 (Tier System)
@@ -44,20 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // 초기 로드 시 localStorage에서 토큰 복원
-  useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    if (storedToken) {
-      setToken(storedToken);
-      // 토큰 유효성 검사 및 사용자 정보 가져오기
-      fetchUserProfile(storedToken);
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const fetchUserProfile = async (authToken: string) => {
+  const fetchUserProfile = useCallback(async (authToken: string) => {
     try {
-      const response: any = await api.get(endpoints.auth.me, authToken);
+      const response = await api.get<ApiResponse<User>>(endpoints.auth.me, authToken);
       if (response.success && response.data) {
         setUser(response.data);
       } else {
@@ -69,12 +59,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('auth_token');
+    if (storedToken) {
+      setToken(storedToken);
+      // 토큰 유효성 검사 및 사용자 정보 가져오기
+      fetchUserProfile(storedToken);
+    } else {
+      setIsLoading(false);
+    }
+  }, [fetchUserProfile]);
 
   const login = async (username: string, password: string) => {
     try {
-      const response: any = await api.post(endpoints.auth.login, { username, password });
-      
+      const response = await api.post<ApiResponse<AuthPayload>>(endpoints.auth.login, { username, password });
+
       if (response.success && response.data) {
         const { token: authToken, user: userData } = response.data;
         

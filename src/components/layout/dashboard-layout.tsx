@@ -37,6 +37,7 @@ export function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, isLoading } = useAuth();
+  const isUnauthorized = isLoading || !user || user.tier > requiredTier;
 
   // 로그인 및 권한 체크
   useEffect(() => {
@@ -57,8 +58,13 @@ export function DashboardLayout({
     }
   }, [user, isLoading, requiredTier, router]);
 
+  // 모바일에서만 페이지 이동 시 사이드바 닫기
+  useEffect(() => {
+    setIsMobileSidebarOpen(false);
+  }, [pathname]);
+
   // 로그인 확인 중이거나 권한 체크 중
-  if (isLoading || !user || user.tier > requiredTier) {
+  if (isUnauthorized) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
@@ -68,11 +74,6 @@ export function DashboardLayout({
       </div>
     );
   }
-
-  // 모바일에서만 페이지 이동 시 사이드바 닫기
-  useEffect(() => {
-    setIsMobileSidebarOpen(false);
-  }, [pathname]);
 
   const resolvedBottomNav = bottomNavItems ?? sidebarItems.slice(0, 5);
 

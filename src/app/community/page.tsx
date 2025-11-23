@@ -7,10 +7,11 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { studentSidebar } from "@/data/student";
 import { useAuth } from "@/contexts/AuthContext";
 import { api, endpoints } from "@/lib/api";
+import type { ApiResponse, CommunityPostList, CommunityPostSummary } from "@/types/api";
 
 export default function CommunityPage() {
   const { user, token } = useAuth();
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<CommunityPostSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -25,7 +26,7 @@ export default function CommunityPage() {
     }
 
     try {
-      const response: any = await api.get(
+      const response = await api.get<ApiResponse<CommunityPostList>>(
         `${endpoints.community.posts}?page=1&limit=20`,
         token
       );
